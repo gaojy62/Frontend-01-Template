@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     newDom.style.top = `${getRandomNumber(0, 330)}px`
     newDom.style.borderRadius = '50%'
     newDom.style.background = `rgb(
-      ${getRandomNumber(0, 256)},
-      ${getRandomNumber(0, 256)},
-      ${getRandomNumber(0, 256)}
+      ${getRandomNumber(0, 255)},
+      ${getRandomNumber(0, 255)},
+      ${getRandomNumber(0, 255)}
     )`
     myFrame.contentWindow.document.body.append(newDom)
   })
