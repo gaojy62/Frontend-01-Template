@@ -54,7 +54,7 @@
 | inline,table-row-group, table-column, table-column-group, table-header-group, table-footer-group, table-row, table-cell, table-caption, inline-block |     block      |
 |                                                                         其他                                                                         | 对应的特殊效果 |
 
-## 创建一个值为`"a"='b'`的 html 属性
+## 创建一个属性值为`"a"='b'`的 html 元素
 
 使用转义字符实现,常用转义字符如下：
 
