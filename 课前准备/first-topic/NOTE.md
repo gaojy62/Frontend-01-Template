@@ -38,3 +38,34 @@
   window.parent.document.body.append(dom)
   ```
 
+### 移动 dom
+
+> 只想到一种修改 dom 的 right 和 top 的值暂时没有其他方法
+
+## position display float
+
+- 如果`display`为`null`，则`position`和`float`不会起任何作用
+- 如果`position`为`flex`或者`absolute`时，`float`不会起作用,`display`一般为对应值对应的状态,但是`inline`时,效果为`block`,详细为下表
+- 如果不符合上边的情况,且`float`不为`none`,则`display`的效果为下表
+
+|                                                                          值                                                                          |     效果值     |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------: | :------------: |
+|                                                                     inline-table                                                                     |     table      |
+| inline,table-row-group, table-column, table-column-group, table-header-group, table-footer-group, table-row, table-cell, table-caption, inline-block |     block      |
+|                                                                         其他                                                                         | 对应的特殊效果 |
+
+## 创建一个值为`"a"='b'`的 html 属性
+
+使用转义字符实现,常用转义字符如下：
+
+|        字符        | 十进制  | 转义字符 |
+| :----------------: | :-----: | :------: |
+|         "          | \&#34;  | \&quot;  |
+|         &          | \&#38;  |  \&amp;  |
+|         <          | \&#60;  |  \&lt;   |
+|         >          | \&#62;  |  \&gt;   |
+| non-breaking space | \&#160; | \&nbsp;  |
+
+```html
+<button id="move" name="&#34;a&#34;='b'">move</button>
+```
