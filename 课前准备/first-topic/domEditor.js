@@ -7,17 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   addBtn.addEventListener('click', e => {
     const newDom = document.createElement('div')
-    newDom.style.width = '50px'
-    newDom.style.height = '50px'
-    newDom.style.position = 'fixed'
-    newDom.style.right = `${getRandomNumber(0, 650)}px`
-    newDom.style.top = `${getRandomNumber(0, 330)}px`
-    newDom.style.borderRadius = '50%'
-    newDom.style.background = `rgb(
-      ${getRandomNumber(0, 255)},
-      ${getRandomNumber(0, 255)},
-      ${getRandomNumber(0, 255)}
-    )`
+    newDom.style.cssText = `width:50px;height:50px;position:fixed;right:${getRandomNumber(0, 650)}px;top:${getRandomNumber(0, 330)}px;border-radius:50%;background:rgb(${getRandomNumber(0, 255)},${getRandomNumber(0, 255)},${getRandomNumber(0, 255)})`
     myFrame.contentWindow.document.body.append(newDom)
   })
 
