@@ -1,0 +1,30 @@
+语言按语法分类
+
+产生式(BNF)
+
+规定一种语言只能以任意个无序的`a`,`b`组成
+
+<Program> ::= "a"+ | "b"+
+<Program> ::= <Program>"a"+ | <Program>"b"+
+
+定义一个整数带括号的四则运算
+
+<Number> ::= "0" | "1" | "2" | .... | "9"
+
+<DecimalNumber> ::= "0" | (("1" | "2" | .... | "9") <Number>* )
+
+<PrimaryExpression> = <DecimalNumber> | 
+  "("<LogicalExpression>")"
+
+<MultipExpression> ::= <DecimalNumber> | 
+  <MultipExpression> "*" <PrimaryExpression> |
+  <MultipExpression> "/" <PrimaryExpression> 
+
+<AddExpression> ::= <MultipExpression> | 
+  <AddExpression> "+" <MultipExpression> |
+  <AddExpression> "-" <MultipExpression> |
+
+<LogicalExpression> ::= <AddExpression> |
+  <LogicalExpression> "||" <AddExpression> |
+  <LogicalExpression> "&&" <AddExpression>
+ 
