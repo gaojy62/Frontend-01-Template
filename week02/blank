@@ -28,3 +28,19 @@
   <LogicalExpression> "||" <AddExpression> |
   <LogicalExpression> "&&" <AddExpression>
  
+
+ InputElement
+  Comment
+  WhiteSpace
+  LineTerminator
+  Token
+    Punctuator (符号)
+
+    IdentifierName (标识符)
+      Kerwords
+      Identifier
+        变量名
+        属性名
+
+    Literal (直接量)
+      Number
