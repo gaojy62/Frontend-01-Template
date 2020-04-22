@@ -1,6 +1,8 @@
 # 第二周总结
 
-## 语言按语法分类
+## 编程语言通识
+
+### 语言按语法分类
 
 - 非形式语言
   - 中文，英文
@@ -12,7 +14,7 @@
 
 现代主流编程语言会把文法分为词法和语法两部分。词法指用正则做一遍粗略的处理，把语言变为单个的词，把这些词作为输入流去做语法分析。
 
-## 产生式(BNF)
+### 产生式(BNF)
 
 - 用尖括号括起来的名称来表示语法结构
 - 语法结构非为基础结构和复合结构
@@ -57,7 +59,7 @@
   <LogicalExpression> "&&" <AddExpression>
 ```
 
-## 图灵完备性
+### 图灵完备性
 
 - 命令式--图灵机
   - goto
@@ -65,7 +67,7 @@
 - 声明式--lambda
   - 递归
 
-## 类型系统
+### 类型系统
 
 - 动态与静态
 - 强类型与弱类型
@@ -75,7 +77,7 @@
 - 子类型
   - 逆变/协变
 
-## 一般命令式编程语言
+### 一般命令式编程语言
 
 - Atom
   - Identifier
@@ -99,3 +101,59 @@
   - Module
   - Package
   - Library
+
+## JavaScript
+
+### JS 词法、类型
+
+- InputElement
+  - Comment
+    - // 单行注释
+    - /*多行注释*/
+  - WhiteSpace
+    - \<TAB>
+    - \<VT>纵向制表符
+    - \<FF> Form Feed
+    - \<SP> 日常开发最常用
+    - \<NBSP>  处理排版问题
+    - \<ZWNBSP>
+    - \<USP>
+  - LineTerminator
+    - \<LF> Line Feed \n 日常开发最常用
+    - \<CR> 回车 \r
+    - \<LS>
+    - \<PS>
+  - Token
+    - Punctuator (符号)
+    - IdentifierName (标识符)
+      - Kerwords
+      - Identifier
+        - 变量名
+        - 属性名
+      - futureResevedWord
+    - Literal (直接量)
+      - Number
+        - IEEE 754 Double Float
+        - 浮点数比较时需要加精度(Math.abs(num1-num2)<=Number.EPSILON)
+        - 最佳实践 Number.MAX_SAFE_INTEGEF
+        - grammar
+          - DecimalIntegerLiteral
+          - BinaryIntegerLiteral
+          - OctalIntegerLiteral
+          - HexIntegerLiteral
+      - String
+        - Character
+        - Code Point
+        - Econding
+          - UTF
+            - UTF-8
+            - UTF-16 （内存中实际是以这种方式保存的）
+        - grammar
+          - " DoubleStringCharactersopt "
+          - ' SingleStringCharactersopt '
+          - `` 字符串模板
+      - Boolen
+        - true
+        - false
+      - Null
+      - Undefined
