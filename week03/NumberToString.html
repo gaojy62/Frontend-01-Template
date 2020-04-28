@@ -1,0 +1,56 @@
+<script>
+  function numberToString(num, hex = 10) {
+    const map = {
+      '0': '0',
+      '1': '1',
+      '2': '2',
+      '3': '3',
+      '4': '4',
+      '5': '5',
+      '6': '6',
+      '7': '7',
+      '8': '8',
+      '9': '9',
+      '10': 'a',
+      '11': 'b',
+      '12': 'c',
+      '13': 'd',
+      '14': 'e',
+      '15': 'f',
+      '16': 'g',
+    }
+    let integerString = '',
+      decimalString = '',
+      symbol = ''
+
+    if (hex === 0 || hex > 16 || hex < 0) {
+      console.log('输入正确的进制数,最大支持16进制')
+      return
+    }
+    if (num === 0) return '0'
+
+    if (num < 0) {
+      num = Math.abs(num)
+      symbol = '-'
+    }
+    let integer = Math.floor(num)
+    let decimal = num - integer
+    // 处理整数部分
+    while (integer > 0) {
+      // 每次取整数的最后一个，并拼接到ret最前
+      integerString = map[String(integer % hex)] + integerString
+      // 移除已经拼接过的数子
+      integer = Math.floor(integer / hex)
+    }
+    // 处理小数部分
+    while (decimal > 0 && decimalString.length <= 10) {
+      // 乘2取整数
+      decimalString = decimalString + map[Math.floor(decimal * hex)]
+      // 移除整数部分
+      decimal = decimal * hex - Math.floor(decimal * hex)
+    }
+    return decimalString === ''
+      ? symbol + integerString
+      : symbol + integerString + '.' + decimalString
+  }
+</script>
