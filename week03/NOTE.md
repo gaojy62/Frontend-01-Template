@@ -118,4 +118,64 @@ ExponentiationExpression[Yield, Await] :
 
 ## 语句
 
+### Statement
+
+- 简单语句
+  - ExpressionStatement
+  - EmptyStatement
+  - DebuggerStatement
+  - ThrowStatement
+  - ContinuxStatement
+  - BreakStatement
+  - ReturnStatement
+- 复合语句
+  - BlockStatement
+  - IfStatement
+  - SwitchStatement
+  - IterationStatement
+    - while
+    - do while
+    - for for本身会产生一个作用域`()`，不会影响for后面的`{}`块级作用域
+    - for in
+    - for of
+    - for awiat of
+  - WithStatement
+  - LabelledStatement
+  - TryStatement
+- 声明
+  - FunctionDeclaration
+  - GenerationDeclaration
+  - AsyncFunctionDeclaration
+  - AsyncGenerationDeclaration
+  - VariableStatement
+  - ClassDeclaration
+  - LexicalDeclaration
+
+### Runtime
+
+#### Completion Record
+
+- \[\[type]]: normal,break,continue,return,throw
+- \[\[value]]: Types(8种类型)
+- \[\[target]]: label
+
+>\[\[type]]: normal, \[\[value]]: --, \[\[target]]: --
+>
+> - BlockStatement
+>
+>\[\[type]]: break continue, \[\[value]]: --, \[\[target]]: label
+>
+>- LabelledStatement
+>- IterationStatement
+>- ContinuxStatement
+>- SwitchStatement
+>- BreakStatement
+>
+>\[\[type]]: return, \[\[value]]: --, \[\[target]]: label
+>
+> - TryStatement
+>
+
+#### Lexical Environment
+
 ## 对象
