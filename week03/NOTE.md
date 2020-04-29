@@ -179,3 +179,39 @@ ExponentiationExpression[Yield, Await] :
 #### Lexical Environment
 
 ## 对象
+
+### Built-in Exotic Object Internal Methods and Slots
+
+- Bound Function Exotic Objects
+  - \[\[BoundTargetFunction]]
+  - \[\[BoundThis]]
+  - \[\[BoundArguments]]
+- Array Exotic Objects
+  - **length** is always a nonnegative integer less than 232
+- String Exotic Objects
+  - **length**  is the number of code unit elements in the encapsulated String value.
+- Arguments Exotic Objects
+- Integer-Indexed Exotic Objects
+- Module Namespace Exotic Objects
+  - [[Module]]
+  - [[Exports]]
+  - [[Prototype]]
+- Immutable Prototype Exotic Objects
+
+### Proxy Object Internal Methods and Internal Slots
+
+| Internal Method       | Handler Method           |
+| :-------------------- | :----------------------- |
+| [[GetPrototypeOf]]    | getPrototypeOf           |
+| [[SetPrototypeOf]]    | setPrototypeOf           |
+| [[IsExtensible]]      | isExtensible             |
+| [[PreventExtensions]] | preventExtensions        |
+| [[GetOwnProperty]]    | getOwnPropertyDescriptor |
+| [[DefineOwnProperty]] | defineProperty           |
+| [[HasProperty]]       | has                      |
+| [[Get]]               | get                      |
+| [[Set]]               | set                      |
+| [[Delete]]            | deleteProperty           |
+| [[OwnPropertyKeys]]   | ownKeys                  |
+| [[Call]]              | apply                    |
+| [[Construct]]         | construct                |
