@@ -172,7 +172,7 @@ Realm
 这些被创建的对象也是由原型的,如果没有Realm,我们就无法知道它们是什么
 
 举例栗子:
-打开一个空白页,在body下添加一个`iframe`
+打开一个空白页,在 body 下添加一个`iframe`
 
 ```js
 var ifr = document.createElement('iframe')
