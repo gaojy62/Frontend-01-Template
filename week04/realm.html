@@ -1,0 +1,97 @@
+<script>
+  const set = new Set()
+  const globalProperties = [
+    'eval',
+    'isFinite',
+    'isNaN',
+    'parseFloat',
+    'parseInt',
+    'decodeURI',
+    'decodeURIComponent',
+    'encodeURI',
+    'encodeURIComponent',
+    'Array',
+    'Date',
+    'RegExp',
+    'Promise',
+    'Proxy',
+    'Map',
+    'WeakMap',
+    'Set',
+    'WeakSet',
+    'Function',
+    'Boolean',
+    'String',
+    'Number',
+    'Symbol',
+    'Object',
+    'Error',
+    'EvalError',
+    'RangeError',
+    'ReferenceError',
+    'SyntaxError',
+    'TypeError',
+    'URIError',
+    'ArrayBuffer',
+    'SharedArrayBuffer',
+    'DataView',
+    'Float32Array',
+    'Float64Array',
+    'Int8Array',
+    'Int16Array',
+    'Int32Array',
+    'Uint8Array',
+    'Uint16Array',
+    'Uint32Array',
+    'Uint8ClampedArray',
+    'Atomics',
+    'JSON',
+    'Math',
+    'Reflect',
+    'BigInt',
+  ]
+
+  const queue = []
+  for (let item of globalProperties) {
+    queue.push({
+      path: [item],
+      object: this[item],
+    })
+  }
+
+  let current,
+    i = 0
+  while (queue.length) {
+    i++
+    current = queue.shift()
+    console.log(i + ':' + current.path.join('.'))
+    set.add(current.object)
+    for (key of Object.getOwnPropertyNames(current.object)) {
+      let property = Object.getOwnPropertyDescriptor(current.object, key)
+      if (
+        (property.value !== null && typeof property.value === 'object') ||
+        typeof property.value === 'function'
+      ) {
+        if (!set.has(property.value))
+          queue.push({
+            path: current.path.concat([key]),
+            object: property.value,
+          })
+      }
+      if (property.get) {
+        if (!set.has(property.get))
+          queue.push({
+            path: current.path.concat([key]),
+            object: property.get,
+          })
+      }
+      if (property.set) {
+        if (!set.has(property.set))
+          queue.push({
+            path: current.path.concat([key]),
+            object: property.set,
+          })
+      }
+    }
+  }
+</script>
