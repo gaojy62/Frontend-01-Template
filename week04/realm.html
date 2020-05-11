@@ -1,97 +1,150 @@
-<script>
-  const set = new Set()
-  const globalProperties = [
-    'eval',
-    'isFinite',
-    'isNaN',
-    'parseFloat',
-    'parseInt',
-    'decodeURI',
-    'decodeURIComponent',
-    'encodeURI',
-    'encodeURIComponent',
-    'Array',
-    'Date',
-    'RegExp',
-    'Promise',
-    'Proxy',
-    'Map',
-    'WeakMap',
-    'Set',
-    'WeakSet',
-    'Function',
-    'Boolean',
-    'String',
-    'Number',
-    'Symbol',
-    'Object',
-    'Error',
-    'EvalError',
-    'RangeError',
-    'ReferenceError',
-    'SyntaxError',
-    'TypeError',
-    'URIError',
-    'ArrayBuffer',
-    'SharedArrayBuffer',
-    'DataView',
-    'Float32Array',
-    'Float64Array',
-    'Int8Array',
-    'Int16Array',
-    'Int32Array',
-    'Uint8Array',
-    'Uint16Array',
-    'Uint32Array',
-    'Uint8ClampedArray',
-    'Atomics',
-    'JSON',
-    'Math',
-    'Reflect',
-    'BigInt',
-  ]
+<!DOCTYPE html>
+<html lang="en">
 
-  const queue = []
-  for (let item of globalProperties) {
-    queue.push({
-      path: [item],
-      object: this[item],
-    })
-  }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
 
-  let current,
-    i = 0
-  while (queue.length) {
-    i++
-    current = queue.shift()
-    console.log(i + ':' + current.path.join('.'))
-    set.add(current.object)
-    for (key of Object.getOwnPropertyNames(current.object)) {
-      let property = Object.getOwnPropertyDescriptor(current.object, key)
-      if (
-        (property.value !== null && typeof property.value === 'object') ||
-        typeof property.value === 'function'
-      ) {
-        if (!set.has(property.value))
-          queue.push({
-            path: current.path.concat([key]),
-            object: property.value,
-          })
-      }
-      if (property.get) {
-        if (!set.has(property.get))
-          queue.push({
-            path: current.path.concat([key]),
-            object: property.get,
-          })
-      }
-      if (property.set) {
-        if (!set.has(property.set))
-          queue.push({
-            path: current.path.concat([key]),
-            object: property.set,
-          })
-      }
+<body>
+  <div id="container">
+
+  </div>
+  <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.1.0/build/g6.js"></script>
+
+  <script>
+    const set = new Set()
+    const globalProperties = [
+      'eval',
+      'isFinite',
+      'isNaN',
+      'parseFloat',
+      'parseInt',
+      'decodeURI',
+      'decodeURIComponent',
+      'encodeURI',
+      'encodeURIComponent',
+      'Array',
+      'Date',
+      'RegExp',
+      'Promise',
+      'Proxy',
+      'Map',
+      'WeakMap',
+      'Set',
+      'WeakSet',
+      'Function',
+      'Boolean',
+      'String',
+      'Number',
+      'Symbol',
+      'Object',
+      'Error',
+      'EvalError',
+      'RangeError',
+      'ReferenceError',
+      'SyntaxError',
+      'TypeError',
+      'URIError',
+      'ArrayBuffer',
+      'SharedArrayBuffer',
+      'DataView',
+      'Float32Array',
+      'Float64Array',
+      'Int8Array',
+      'Int16Array',
+      'Int32Array',
+      'Uint8Array',
+      'Uint16Array',
+      'Uint32Array',
+      'Uint8ClampedArray',
+      'Atomics',
+      'JSON',
+      'Math',
+      'Reflect',
+      // 'BigInt',
+    ]
+
+    const queue = []
+    for (let item of globalProperties) {
+      queue.push({
+        path: [item],
+        object: this[item],
+        children: [],
+      })
     }
-  }
-</script>
+
+    let current,
+      i = 0
+    const nodes = []
+    while (queue.length) {
+
+      current = queue.shift()
+      current.id = i
+      console.log(i + ':' + current.path.join('.'))
+      set.add(current.object)
+
+      for (let key of Object.getOwnPropertyNames(current.object)) {
+
+        let property = Object.getOwnPropertyDescriptor(current.object, key)
+        
+        if (
+          (property.value !== null && typeof property.value === 'object') ||
+          typeof property.value === 'function'
+        ) {
+          if (!set.has(property.value)) {
+            queue.unshift({
+              path: current.path.concat([key]),
+              object: property.value,
+              children:[]
+            })
+            current.children.push({
+              path: current.path.concat([key]),
+              object: property.value,
+              children:[]
+            })
+          }
+
+        }
+
+        if (property.get) {
+          if (!set.has(property.get)) {
+            queue.unshift({
+              path: current.path.concat([key]),
+              object: property.get,
+              children:[]
+            })
+            current.children.push({
+              path: current.path.concat([key]),
+              object: property.get,
+              children:[]
+            })
+          }
+
+        }
+
+        if (property.set) {
+          if (!set.has(property.set)) {
+            queue.unshift({
+              path: current.path.concat([key]),
+              object: property.set,
+              children:[]
+            })
+            current.children.push({
+              path: current.path.concat([key]),
+              object: property.set,
+              children:[]
+            })
+          }
+        }
+      }
+      
+      nodes.push(current)
+      i++
+    }
+    // var nodes = Array.from(set);
+  </script>
+</body>
+
+</html>
