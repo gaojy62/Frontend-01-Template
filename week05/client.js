@@ -34,6 +34,7 @@ ${Object.keys(this.headers)
 ${this.bodyText}`
   }
   send(connection) {
+    const parse = new ResponseParse()
     return new Promise((resolve, reject) => {
       if (connection) {
         connection.write(this.toString())
@@ -49,7 +50,10 @@ ${this.bodyText}`
         )
       }
       connection.on('data', (data) => {
-        resolve(data.toString())
+        parse.receive(data.toString())
+        console.log(parse.statusLine)
+        console.log(parse.headers)
+        // resolve(data.toString())
         connection.end()
       })
       connection.on('error', (err) => {
@@ -57,6 +61,79 @@ ${this.bodyText}`
         connection.end()
       })
     })
+  }
+}
+
+class ResponseParse {
+  constructor() {
+    this.WAITING_STATUS_LINE = 0
+    this.WAITING_STATUS_LINE_END = 1
+
+    this.WAITING_HEADER_NAME = 2
+    this.WAITING_HEADER_SPACE = 3
+    this.WAITING_HEADER_VALUE = 4
+    this.WAITING_HEADER_LINE_END = 5
+    this.WAITING_STATUS_BLOCK_END = 6
+
+    this.WAITING_BODY = 6
+
+    this.currentStatus = this.WAITING_STATUS_LINE
+    this.statusLine = ''
+    this.headers = {}
+    this.headerName = ''
+    this.headerValue = ''
+  }
+  receive(string) {
+    for (let i = 0; i < string.length; i++) {
+      this.receiveChar(string.charAt(i))
+    }
+  }
+  receiveChar(char) {
+    if (this.currentStatus === this.WAITING_STATUS_LINE) {
+      if (char === '\r') {
+        this.currentStatus = this.WAITING_STATUS_LINE_END
+      } else {
+        this.statusLine += char
+      }
+    } else if (this.currentStatus === this.WAITING_STATUS_LINE_END) {
+      if (char === '\n') {
+        this.currentStatus = this.WAITING_HEADER_NAME
+      } else {
+        console.log(char)
+        console.log('http报文起始行格式不正确')
+      }
+    } else if (this.currentStatus === this.WAITING_HEADER_NAME) {
+      if (char === ':') {
+        this.currentStatus = this.WAITING_HEADER_SPACE
+      } else if (char === '\r') {
+        this.currentStatus = this.WAITING_BODY
+      } else {
+        this.headerName += char
+      }
+    } else if (this.currentStatus === this.WAITING_HEADER_SPACE) {
+      if (char === ' ') {
+        this.currentStatus = this.WAITING_HEADER_VALUE
+      } else {
+        console.log('http报文headerValue前少了一个空格')
+      }
+    } else if (this.currentStatus === this.WAITING_HEADER_VALUE) {
+      if (char === '\r') {
+        this.currentStatus = this.WAITING_HEADER_LINE_END
+      } else {
+        this.headerValue += char
+      }
+    } else if (this.currentStatus === this.WAITING_HEADER_LINE_END) {
+      if (char === '\n') {
+        this.currentStatus = this.WAITING_HEADER_NAME
+        this.headers[this.headerName] = this.headerValue
+        this.headerName = ''
+        this.headerValue = ''
+      } else {
+        console.log('http 报文 header格式错误')
+      }
+    } esle if (this.currentStatus === this.WAITING_BODY){
+      
+    }
   }
 }
 

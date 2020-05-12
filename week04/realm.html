@@ -1,197 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
 
-  <body>
-    <div id="container"></div>
-    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.1.0/build/g6.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-    <script>
-      const set = new Set()
-      const globalProperties = [
-        'eval',
-        'isFinite',
-        'isNaN',
-        'parseFloat',
-        'parseInt',
-        'decodeURI',
-        'decodeURIComponent',
-        'encodeURI',
-        'encodeURIComponent',
-        'Array',
-        'Date',
-        'RegExp',
-        'Promise',
-        'Proxy',
-        'Map',
-        'WeakMap',
-        'Set',
-        'WeakSet',
-        'Function',
-        'Boolean',
-        'String',
-        'Number',
-        'Symbol',
-        'Object',
-        'Error',
-        'EvalError',
-        'RangeError',
-        'ReferenceError',
-        'SyntaxError',
-        'TypeError',
-        'URIError',
-        'ArrayBuffer',
-        'SharedArrayBuffer',
-        'DataView',
-        'Float32Array',
-        'Float64Array',
-        'Int8Array',
-        'Int16Array',
-        'Int32Array',
-        'Uint8Array',
-        'Uint16Array',
-        'Uint32Array',
-        'Uint8ClampedArray',
-        'Atomics',
-        'JSON',
-        'Math',
-        'Reflect',
-        // 'BigInt',
-      ]
+<body>
+  <div id="container"></div>
+  <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.1.0/build/g6.js"></script>
 
-      const queue = []
-      for (let item of globalProperties) {
-        queue.push({
-          path: [item],
-          object: this[item],
-          children: [],
-        })
-      }
-      let current,
-        i = 0
-      const nodes = []
-      while (queue.length) {
-        current = queue.shift()
-        current.id = current.path.join('.')
-        current.label = current.path.join('.')
-        console.log(i + ':' + current.path.join('.'))
-        set.add(current.object)
+  <script>
+    const set = new Set()
+    const globalProperties = [
+      'eval',
+      'isFinite',
+      'isNaN',
+      'parseFloat',
+      'parseInt',
+      'decodeURI',
+      'decodeURIComponent',
+      'encodeURI',
+      'encodeURIComponent',
+      'Array',
+      'Date',
+      'RegExp',
+      'Promise',
+      'Proxy',
+      'Map',
+      'WeakMap',
+      'Set',
+      'WeakSet',
+      'Function',
+      'Boolean',
+      'String',
+      'Number',
+      'Symbol',
+      'Object',
+      'Error',
+      'EvalError',
+      'RangeError',
+      'ReferenceError',
+      'SyntaxError',
+      'TypeError',
+      'URIError',
+      'ArrayBuffer',
+      'SharedArrayBuffer',
+      'DataView',
+      'Float32Array',
+      'Float64Array',
+      'Int8Array',
+      'Int16Array',
+      'Int32Array',
+      'Uint8Array',
+      'Uint16Array',
+      'Uint32Array',
+      'Uint8ClampedArray',
+      'Atomics',
+      'JSON',
+      'Math',
+      'Reflect',
+      // 'BigInt',
+    ]
 
-        for (let key of Object.getOwnPropertyNames(current.object)) {
-          let property = Object.getOwnPropertyDescriptor(current.object, key)
-
-          if (
-            (property.value !== null && typeof property.value === 'object') ||
-            typeof property.value === 'function'
-          ) {
-            if (!set.has(property.value)) {
-              queue.unshift({
-                path: current.path.concat([key]),
-                object: property.value,
-                children: [],
-              })
-              current.children.push({
-                id: current.path.concat([key]).join('.'),
-                label: current.path.concat([key]).join('.'),
-                path: current.path.concat([key]),
-                object: property.value,
-                children: [],
-              })
-            }
-          }
-
-          if (property.get) {
-            if (!set.has(property.get)) {
-              queue.unshift({
-                path: current.path.concat([key]),
-                object: property.get,
-                children: [],
-              })
-              current.children.push({
-                id: current.path.concat([key]).join('.'),
-                label: current.path.concat([key]).join('.'),
-                path: current.path.concat([key]),
-                object: property.get,
-                children: [],
-              })
-            }
-          }
-
-          if (property.set) {
-            if (!set.has(property.set)) {
-              queue.unshift({
-                path: current.path.concat([key]),
-                object: property.set,
-                children: [],
-              })
-              current.children.push({
-                id: current.path.concat([key]).join('.'),
-                label: current.path.concat([key]).join('.'),
-                path: current.path.concat([key]),
-                object: property.set,
-                children: [],
-              })
-            }
-          }
-        }
-        if (current.path.length === 1) {
-          nodes.push(current)
-        }
-        if (current.path.length === 2 && current.path[1] === 'prototype') {
-          let root = nodes.find((item) => {
-            return item.path[0] === current.path[0]
-          })
-          root.children.find((item) => {
-            return item.path[1] === 'prototype'
-          }).children = current.children
-        }
-        i++
-      }
-
-      const realm = {
-        id: 'root',
-        label: 'realm',
-        children: nodes,
-      }
-
-      const graph = new G6.TreeGraph({
-        layout: {
-          type: 'dendrogram',
-          direction: 'LR',
-          nodeSep: 50,
-          rankSep: 400,
-          radial: true,
-          subTreeSep: 50,
-        },
-        modes: {
-          default: [
-            {
-              type: 'collapse-expand',
-              onChange(item, collapsed) {
-                const icon = item.get('group').findByClassName('collapse-icon')
-                if (collapsed) {
-                  icon.attr('symbol', EXPAND_ICON)
-                } else {
-                  icon.attr('symbol', COLLAPSE_ICON)
-                }
-              },
-            },
-            'drag-canvas',
-            'zoom-canvas',
-          ],
-        },
-        container: 'container',
-        width: 2000,
-        height: 1000,
-        fitView: true,
-        fitViewPadding: 20,
+    const queue = [],
+      ret = [],
+      map = {}
+    for (let item of globalProperties) {
+      queue.push({
+        path: [item],
+        object: this[item],
       })
-      graph.data(realm)
-      graph.render()
-    </script>
-  </body>
+      map[item] = {
+        id: item,
+        label: item,
+      }
+      ret.push(map[item])
+    }
+    let current,
+      i = 0
+    const nodes = []
+    while (queue.length) {
+      current = queue.shift()
+      // current.id = current.path.join('.')
+      // current.label = current.path.join('.')
+      // console.log(i + ':' + current.path.join('.'))
+      set.add(current.object)
+      for (let key of Object.getOwnPropertyNames(current.object)) {
+        console.log(current)
+        let property = Object.getOwnPropertyDescriptor(current.object, key)
+
+        if (
+          (property.value !== null && typeof property.value === 'object') ||
+          typeof property.value === 'function'
+        ) {
+          if (!set.has(property.value)) {
+            queue.unshift({
+              path: current.path.concat([key]),
+              object: property.value,
+            })
+            let path = current.path.join('.')
+            if (!!map[path]) {
+              map[path] = {
+                id: path,
+                label: path
+              }
+            } else {
+              map[path].children = map[path].children || []
+              map[path].children.push()
+            }
+          }
+        }
+
+        if (property.get) {
+          if (!set.has(property.get)) {
+            queue.unshift({
+              path: current.path.concat([key]),
+              object: property.get,
+            })
+
+          }
+        }
+
+        if (property.set) {
+          if (!set.has(property.set)) {
+            queue.unshift({
+              path: current.path.concat([key]),
+              object: property.set,
+            })
+            // current.children.push({
+            //   id: current.path.concat([key]).join('.'),
+            //   label: current.path.concat([key]).join('.'),
+            //   path: current.path.concat([key]),
+            //   object: property.set,
+            // })
+          }
+        }
+      }
+      // if (current.path.length === 1) {
+      //   nodes.push(current)
+      // }
+      // if (current.path.length === 2 && current.path[1] === 'prototype') {
+      //   let root = nodes.find((item) => {
+      //     return item.path[0] === current.path[0]
+      //   })
+      //   root.children.find((item) => {
+      //     return item.path[1] === 'prototype'
+      //   }).children = current.children
+      // }
+      i++
+    }
+
+    const realm = {
+      id: 'root',
+      label: 'realm',
+      children: nodes,
+    }
+
+    const graph = new G6.TreeGraph({
+      layout: {
+        type: 'dendrogram',
+        direction: 'LR',
+        nodeSep: 50,
+        rankSep: 400,
+        radial: true,
+        subTreeSep: 50,
+      },
+      modes: {
+        default: [{
+            type: 'collapse-expand',
+            onChange(item, collapsed) {
+              const icon = item.get('group').findByClassName('collapse-icon')
+              if (collapsed) {
+                icon.attr('symbol', EXPAND_ICON)
+              } else {
+                icon.attr('symbol', COLLAPSE_ICON)
+              }
+            },
+          },
+          'drag-canvas',
+          'zoom-canvas',
+        ],
+      },
+      container: 'container',
+      width: 1500,
+      height: 800,
+      fitView: true,
+      fitViewPadding: 20,
+    })
+    graph.data(realm)
+    graph.render()
+  </script>
+</body>
+
 </html>
