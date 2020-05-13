@@ -75,13 +75,14 @@ class ResponseParse {
     this.WAITING_HEADER_LINE_END = 5
     this.WAITING_STATUS_BLOCK_END = 6
 
-    this.WAITING_BODY = 6
+    this.WAITING_BODY = 7
 
     this.currentStatus = this.WAITING_STATUS_LINE
     this.statusLine = ''
     this.headers = {}
     this.headerName = ''
     this.headerValue = ''
+    this.bodyPares = null
   }
   receive(string) {
     for (let i = 0; i < string.length; i++) {
@@ -106,7 +107,10 @@ class ResponseParse {
       if (char === ':') {
         this.currentStatus = this.WAITING_HEADER_SPACE
       } else if (char === '\r') {
-        this.currentStatus = this.WAITING_BODY
+        this.currentStatus = this.WAITING_STATUS_BLOCK_END
+        if (this.headers['Transfer-Encoding'] === 'chunked') {
+          this.bodyPares = new TrunkedBodyParse()
+        }
       } else {
         this.headerName += char
       }
@@ -131,8 +135,27 @@ class ResponseParse {
       } else {
         console.log('http 报文 header格式错误')
       }
-    } esle if (this.currentStatus === this.WAITING_BODY){
-      
+    } else if (this.currentStatus === this.WAITING_STATUS_BLOCK_END) {
+      if (char === '\n') {
+        this.currentStatus = this.WAITING_BODY
+      }
+    } else if (this.currentStatus === this.WAITING_BODY) {
+      this.bodyPares.receiveChar(char)
+    }
+  }
+}
+
+class TrunkedBodyParse {
+  constructor() {
+    this.WAITING_LENGTH = 0
+    this.WAITING_LENGTH_LINE_END = 1
+    this.READING_TRUNKED = 2
+    this.length = 0
+    this.content = []
+    this.currentStatus = this.WAITING_LENGTH
+  }
+  receiveChar(char) {
+    if (this.currentStatus === this.WAITING_LENGTH) {
     }
   }
 }
