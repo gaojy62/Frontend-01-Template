@@ -51,10 +51,10 @@ ${this.bodyText}`
       }
       connection.on('data', (data) => {
         parse.receive(data.toString())
-        console.log(parse.statusLine)
-        console.log(parse.headers)
-        // resolve(data.toString())
-        connection.end()
+        if (parse.isFinished) {
+          resolve(parse.response)
+          connection.end()
+        }
       })
       connection.on('error', (err) => {
         reject(err)
@@ -83,6 +83,18 @@ class ResponseParse {
     this.headerName = ''
     this.headerValue = ''
     this.bodyPares = null
+  }
+  get isFinished() {
+    return this.bodyPares && this.bodyPares.isFinished
+  }
+  get response() {
+    this.statusLine.match(/HTTP\/1.1 ([0-9]+) ([\s\S]+)/)
+    return {
+      statusCode: RegExp.$1,
+      statusText: RegExp.$2,
+      headers: this.headers,
+      body: this.bodyPares.content.join(''),
+    }
   }
   receive(string) {
     for (let i = 0; i < string.length; i++) {
@@ -150,12 +162,48 @@ class TrunkedBodyParse {
     this.WAITING_LENGTH = 0
     this.WAITING_LENGTH_LINE_END = 1
     this.READING_TRUNKED = 2
+    this.WAITING_NEW_LINE = 3
+    this.WAITING_NEW_LINE_END = 4
+    this.lengthString = '0x'
     this.length = 0
     this.content = []
     this.currentStatus = this.WAITING_LENGTH
+    this.isFinished = false
   }
   receiveChar(char) {
     if (this.currentStatus === this.WAITING_LENGTH) {
+      if (char === '\r') {
+        this.currentStatus = this.WAITING_LENGTH_LINE_END
+      } else {
+        this.lengthString += char
+      }
+    } else if (this.currentStatus === this.WAITING_LENGTH_LINE_END) {
+      if (char === '\n') {
+        this.length = Number(this.lengthString)
+        if (this.length === 0) {
+          this.isFinished = true
+        }
+        this.lengthString = '0x'
+        this.currentStatus = this.READING_TRUNKED
+      } else {
+        console.log('body解析错误')
+      }
+    } else if (this.currentStatus === this.READING_TRUNKED) {
+      if (this.length > 0) {
+        this.content.push(char)
+        this.length--
+      } 
+      if (this.length === 0) {
+        this.currentStatus = this.WAITING_NEW_LINE
+      }
+    } else if (this.currentStatus === this.WAITING_NEW_LINE) {
+      if (char === '\r') {
+        this.currentStatus = this.WAITING_NEW_LINE_END
+      }
+    } else if (this.currentStatus === this.WAITING_NEW_LINE_END) {
+      if (char === '\n') {
+        this.currentStatus = this.WAITING_LENGTH
+      }
     }
   }
 }
