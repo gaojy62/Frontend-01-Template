@@ -122,6 +122,8 @@ class ResponseParse {
         this.currentStatus = this.WAITING_STATUS_BLOCK_END
         if (this.headers['Transfer-Encoding'] === 'chunked') {
           this.bodyPares = new TrunkedBodyParse()
+        }else if (this.headers['Content-Type'] === 'text/html') {
+          this.bodyPares = new TrunkedBodyParse()
         }
       } else {
         this.headerName += char
