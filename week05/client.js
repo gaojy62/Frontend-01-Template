@@ -112,7 +112,6 @@ class ResponseParse {
       if (char === '\n') {
         this.currentStatus = this.WAITING_HEADER_NAME
       } else {
-        console.log(char)
         console.log('http报文起始行格式不正确')
       }
     } else if (this.currentStatus === this.WAITING_HEADER_NAME) {
@@ -172,6 +171,35 @@ class TrunkedBodyParse {
     this.currentStatus = this.WAITING_LENGTH
     this.isFinished = false
   }
+
+  // getCharLength(char){
+  //   return char.replace(/[^\u0000-\u00ff]/g,'aaa').length
+  // }
+
+  getCode(code) {
+    if (code <= 0x7f) {
+      return [code]
+    } else if (code >= 0x80 && code <= 0x7ff) {
+      return [
+        0b11000000 | ((code >> 6) & 0b11111),
+        0b10000000 | (code & 0b111111),
+      ]
+    } else if (code >= 0x800 && code <= 0xffff) {
+      return [
+        0b11100000 | ((code >> 12) & 0b1111),
+        0b10000000 | ((code >> 6) & 0b111111),
+        0b10000000 | (code & 0b111111),
+      ]
+    } else if (code >= 0x10000 && code <= 0x10ffff) {
+      return [
+        0b11110000 | ((code >> 18) & 0b111),
+        0b10000000 | ((code >> 12) & 0b111111),
+        0b10000000 | ((code >> 6) & 0b111111),
+        0b10000000 | (code & 0b111111),
+      ]
+    }
+  }
+
   receiveChar(char) {
     if (this.currentStatus === this.WAITING_LENGTH) {
       if (char === '\r') {
@@ -193,7 +221,8 @@ class TrunkedBodyParse {
     } else if (this.currentStatus === this.READING_TRUNKED) {
       if (this.length > 0) {
         this.content.push(char)
-        this.length--
+        let charLength = this.getCode(char.codePointAt(0)).length
+        this.length -= charLength
       } 
       if (this.length === 0) {
         this.currentStatus = this.WAITING_NEW_LINE
