@@ -1,4 +1,5 @@
 const net = require('net')
+const parse = require('./parseHtml.js')
 
 class Request {
   constructor(options) {
@@ -34,7 +35,7 @@ ${Object.keys(this.headers)
 ${this.bodyText}`
   }
   send(connection) {
-    const parse = new ResponseParse()
+    const parseHeader = new ResponseParse()
     return new Promise((resolve, reject) => {
       if (connection) {
         connection.write(this.toString())
@@ -50,9 +51,9 @@ ${this.bodyText}`
         )
       }
       connection.on('data', (data) => {
-        parse.receive(data.toString())
-        if (parse.isFinished) {
-          resolve(parse.response)
+        parseHeader.receive(data.toString())
+        if (parseHeader.isFinished) {
+          resolve(parseHeader.response)
           connection.end()
         }
       })
@@ -250,5 +251,5 @@ void (async function () {
     },
   })
   let response = await request.send()
-  console.log(response)
+  let html = parse.parseHtml(response.body)
 })()
