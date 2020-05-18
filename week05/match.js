@@ -18,7 +18,7 @@ function foundB(c) {
   if (c === 'b') {
     return foundA2
   } else {
-    return start
+    return start(c)
   }
 }
 
@@ -26,7 +26,7 @@ function foundA2(c) {
   if (c === 'a') {
     return foundB2
   } else {
-    return start
+    return start(c)
   }
 }
 
@@ -34,7 +34,7 @@ function foundB2(c) {
   if (c === 'b') {
     return foundA3
   } else {
-    return start
+    return start(c)
   }
 }
 
@@ -42,7 +42,7 @@ function foundA3(c) {
   if (c === 'a') {
     return foundX
   } else {
-    return start
+    return start(c)
   }
 }
 

@@ -50,6 +50,7 @@ function emit(token) {
         type: 'text',
         content: '',
       }
+      // 注意这里push的是对象，由于对象的引用修改一处会影响其他
       top.children.push(currentTextNode)
     }
     currentTextNode.content += token.content
@@ -290,5 +291,4 @@ module.exports.parseHtml = function parseHtml(html) {
     state = state(c)
   }
   state = state(EOF)
-  console.log(stack[0].children[0].children[1].children[1])
 }
