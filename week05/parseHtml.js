@@ -1,3 +1,5 @@
+const parseCss = require('./parseCss')
+
 const EOF = Symbol('EOF')
 
 let currentToken = null
@@ -26,6 +28,8 @@ function emit(token) {
       }
     }
 
+    parseCss.computeCss(element,stack)
+
     top.children.push(element)
     element.parent = top
 
@@ -38,6 +42,9 @@ function emit(token) {
     if (top.tagName !== token.tagName) {
       throw new Error('tag name do not match')
     } else {
+      if (top.tagName === 'style') {
+        parseCss.addCSSRules(top.children[0].content)
+      }
       // 非自封闭标签匹配完成后出栈
       stack.pop()
     }
@@ -163,7 +170,6 @@ function afterAttributeName(c) {
   } else if (c === EOF) {
     throw new Error('eof-in-tag parse error.')
   } else {
-    // 有歧义
     currentAttribute = {
       name: '',
       value: '',
@@ -189,7 +195,6 @@ function beforeAttributeValue(c) {
 
 function doubleQuotedAttributeValue(c) {
   if (c === '"') {
-    // 有歧义
     currentToken[currentAttribute.name] = currentAttribute.value
     return afterQuotedAttributeValue
   } else if (c === '\u0000') {
@@ -222,7 +227,6 @@ function afterQuotedAttributeValue(c) {
   } else if (c === '/') {
     return selfClosingStartTag
   } else if (c === '>') {
-    // 有歧义
     currentToken[currentAttribute.name] = currentAttribute.value
     emit(currentAttribute)
     return data
@@ -236,7 +240,6 @@ function afterQuotedAttributeValue(c) {
 
 function unquotedAttributeValue(c) {
   if (c.match(/^[\t\n\f ]$/)) {
-    // 有歧义
     currentToken[currentAttribute.name] = currentAttribute.value
     return beforeAttributeName
   } else if (c === '>') {
