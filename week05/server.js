@@ -1,34 +1,19 @@
 const http = require('http')
+const fs = require('fs')
+const path = require('path')
 
 const server = http.createServer((req, res) => {
+  const fileName = path.resolve(__dirname, './test.html')
   console.log('request received')
   console.log(req.headers)
 
+  res.setHeader('Content-Type', 'text/html')
   res.setHeader('X-Foo', 'bar')
   res.writeHead(200, { 'Content-Type': 'text/plain' })
-  // res.end('only some letters')
-  res.end(
-    `<html maaa=a >
-<head>
-    <style>
-body div #myid{
-    width:100px;
-    background-color: #ff5000;
-}
-body div img{
-    width:30px;
-    background-color: #ff1111;
-}
-    </style>
-</head>
-<body>
-    <div>
-        <img id="myid"/>
-        <img />
-    </div>
-</body>
-</html>`
-  )
+
+  fs.readFile(fileName, (err, data) => {
+    res.end(data)
+  })
 })
 
 server.listen(8088)

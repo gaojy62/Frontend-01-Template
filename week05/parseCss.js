@@ -1,4 +1,5 @@
 const css = require('css')
+const parseSelector = require('./compositeSelector')
 
 const rules = []
 
@@ -54,7 +55,7 @@ function computeCss(element, stack) {
           computedStyle[declaration.property].value = declaration.value
           computedStyle[declaration.property].specificity = sp
         } else if (
-          compare(computedStyle[declaration.property].specificity, sp) < 0
+          compare(computedStyle[declaration.property].specificity, sp) <= 0
         ) {
           computedStyle[declaration.property].value = declaration.value
           computedStyle[declaration.property].specificity = sp
@@ -75,35 +76,82 @@ function specificity(selector) {
   let p = [0, 0, 0, 0]
   let selectorParts = selector.split(' ')
   for (let part of selectorParts) {
-    if (part.charAt(0) === '#') {
-      p[1] += 1
-    } else if (part.charAt(0) === '.') {
-      p[2] += 1
-    } else {
+    let compositeSelector = parseSelector.compositeSelector(part)
+    if (compositeSelector.tagId.length > 0) {
+      p[1] += compositeSelector.tagId.length
+    }
+    if (compositeSelector.tagClass.length > 0) {
+      p[2] += compositeSelector.tagClass.length
+    }
+    if (compositeSelector.tagName.length > 0) {
       p[3] += 1
     }
   }
   return p
 }
 
+function isContain(arr1, arr2) {
+  for (let item of arr2) {
+    // 每开始找一个值就把标志位置为 false，如果后续找到就置为 true，
+    // 当内层循环完成后值还为 false 则返回 false 表示没有匹配成功
+    // 如果外层循环完没有返回 false 则表示匹配成功，返回 true
+    let itemInArr1 = false
+    for (let itemOfArr1 of arr1) {
+      // 如果有对应值则跳出循环，继续寻找 arr2 中的下一个值
+      if (itemOfArr1 === item) {
+        itemInArr1 = true
+        continue
+      }
+    }
+    // 如果当前值 item 在 arr1 中没有对应值，则说明不匹配
+    if (!itemInArr1) {
+      return false
+    }
+  }
+  return true
+}
+
 function match(element, selector) {
   if (!selector || !element.attributes) return false
 
-  if (selector.charAt(0) === '#') {
-    let attr = element.attributes.filter((attr) => attr.name === 'id')[0]
-    if (attr && attr.value === selector.replace('#', '')) {
-      return true
+  let compositeSelector = parseSelector.compositeSelector(selector)
+
+  if (compositeSelector.tagId.length > 0) {
+    let attr = element.attributes.filter((attr) => attr.name === 'id')
+    if (attr.length > 0) {
+      if (isContain(attr[0].value.split(' '), compositeSelector.tagId)) {
+        return true
+      }
     }
-  } else if (selector.charAt(0) === '.') {
-    let attr = element.attributes.filter((attr) => attr.name === 'class')[0]
-    if (attr && attr.value === selector.replace('.', '')) {
-      return true
+  } else if (compositeSelector.tagClass.length > 0) {
+    let attr = element.attributes.filter((attr) => attr.name === 'class')
+    if (attr.length > 0) {
+      if (isContain(attr[0].value.split(' '), compositeSelector.tagClass)) {
+        return true
+      }
     }
   } else {
-    if (element.tagName === selector) {
+    if (element.tagName === compositeSelector.tagName) {
       return true
     }
   }
+  return false
+
+  // if (selector.charAt(0) === '#') {
+  //   let attr = element.attributes.filter((attr) => attr.name === 'id')[0]
+  //   if (attr && attr.value === selector.replace('#', '')) {
+  //     return true
+  //   }
+  // } else if (selector.charAt(0) === '.') {
+  //   let attr = element.attributes.filter((attr) => attr.name === 'class')[0]
+  //   if (attr && attr.value === selector.replace('.', '')) {
+  //     return true
+  //   }
+  // } else {
+  //   if (element.tagName === selector) {
+  //     return true
+  //   }
+  // }
   return false
 }
 

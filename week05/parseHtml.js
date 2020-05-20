@@ -28,7 +28,7 @@ function emit(token) {
       }
     }
 
-    parseCss.computeCss(element,stack)
+    parseCss.computeCss(element, stack)
 
     top.children.push(element)
     element.parent = top
@@ -40,6 +40,8 @@ function emit(token) {
     currentTextNode = null
   } else if (token.type === 'endTag') {
     if (top.tagName !== token.tagName) {
+      console.log('top.tagName:' + top.tagName)
+      console.log('token.tagName:' + token.tagName)
       throw new Error('tag name do not match')
     } else {
       if (top.tagName === 'style') {
@@ -228,7 +230,7 @@ function afterQuotedAttributeValue(c) {
     return selfClosingStartTag
   } else if (c === '>') {
     currentToken[currentAttribute.name] = currentAttribute.value
-    emit(currentAttribute)
+    emit(currentToken)
     return data
   } else if (c === EOF) {
     throw new Error('eof-in-tag parse error.')
@@ -294,4 +296,5 @@ module.exports.parseHtml = function parseHtml(html) {
     state = state(c)
   }
   state = state(EOF)
+  console.log(stack)
 }
