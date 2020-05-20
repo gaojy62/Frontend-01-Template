@@ -280,4 +280,4 @@ function compare(sp1, sp2) {
 
 至此,我们已经完成了一个 css rules 的收集到最终生成 computedStyle 的全过程
 
-完整代码在 week05 目录下
+完整代码在 week05 目录下,完成了复合选择器的匹配和优先级计算及比较
