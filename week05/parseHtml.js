@@ -40,8 +40,6 @@ function emit(token) {
     currentTextNode = null
   } else if (token.type === 'endTag') {
     if (top.tagName !== token.tagName) {
-      console.log('top.tagName:' + top.tagName)
-      console.log('token.tagName:' + token.tagName)
       throw new Error('tag name do not match')
     } else {
       if (top.tagName === 'style') {
