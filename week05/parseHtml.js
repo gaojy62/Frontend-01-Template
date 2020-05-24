@@ -1,4 +1,5 @@
 const parseCss = require('./parseCss')
+const layout = require('./layout')
 
 const EOF = Symbol('EOF')
 
@@ -45,6 +46,7 @@ function emit(token) {
       if (top.tagName === 'style') {
         parseCss.addCSSRules(top.children[0].content)
       }
+      layout(top);
       // 非自封闭标签匹配完成后出栈
       stack.pop()
     }
