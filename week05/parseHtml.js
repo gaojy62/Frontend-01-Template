@@ -296,5 +296,5 @@ module.exports.parseHtml = function parseHtml(html) {
     state = state(c)
   }
   state = state(EOF)
-  console.log(stack)
+  return stack[0]
 }

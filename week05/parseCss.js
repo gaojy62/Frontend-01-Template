@@ -6,7 +6,6 @@ const rules = []
 function addCSSRules(cssText) {
   const ast = css.parse(cssText)
   rules.push(...ast.stylesheet.rules)
-  console.log(rules)
 }
 
 function computeCss(element, stack) {
