@@ -100,6 +100,7 @@ function layout(element) {
     elementStyle[mainSize] = 0
     for (let i = 0; i < items.length; i++) {
       let item = items[i]
+      let itemStyle = getStyle(item)
       if (itemStyle[mainSize] !== null || itemStyle[mainSize] !== void 0) {
         elementStyle[mainSize] = elementStyle[mainSize] + itemStyle[mainSize]
       }
