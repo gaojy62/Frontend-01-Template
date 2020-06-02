@@ -44,4 +44,4 @@ function mathc(pattern, string) {
   }
   return state === stateMap.end
 }
-console.log(mathc('aabbcc', 'aabbaabbaabbcc'))
+console.log(mathc('abc', 'abababcc'))
