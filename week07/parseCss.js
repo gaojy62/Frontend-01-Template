@@ -111,6 +111,7 @@ function isContain(arr1, arr2) {
 }
 
 function match(element, selector) {
+  let matchId = (matchClass = matchTagName = false)
   if (!selector || !element.attributes) return false
 
   let compositeSelector = parseSelector.compositeSelector(selector)
@@ -119,23 +120,35 @@ function match(element, selector) {
     let attr = element.attributes.filter((attr) => attr.name === 'id')
     if (attr.length > 0) {
       if (isContain(attr[0].value.split(' '), compositeSelector.tagId)) {
-        return true
-      }
-    }
-  } else if (compositeSelector.tagClass.length > 0) {
-    let attr = element.attributes.filter((attr) => attr.name === 'class')
-    if (attr.length > 0) {
-      if (isContain(attr[0].value.split(' '), compositeSelector.tagClass)) {
-        return true
+        matchId = true
       }
     }
   } else {
-    if (element.tagName === compositeSelector.tagName) {
-      return true
-    }
+    matchId = true
   }
-  return false
 
+  if (compositeSelector.tagClass.length > 0) {
+    let attr = element.attributes.filter((attr) => attr.name === 'class')
+    if (attr.length > 0) {
+      if (isContain(attr[0].value.split(' '), compositeSelector.tagClass)) {
+        matchClass = true
+      }
+    }
+  } else {
+    matchId = true
+  }
+
+  if (compositeSelector.tagName.length > 0) {
+    if (element.tagName === compositeSelector.tagName) {
+      matchTagName = true
+    }
+  } else {
+    matchTagName = true
+  }
+
+  if (matchId && matchClass && matchTagName) return true
+
+  return false
 }
 
 module.exports = {
