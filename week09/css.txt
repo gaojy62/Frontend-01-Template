@@ -1,27 +1,5 @@
 layout
 
-  border-bottom-color
-  border-bottom-left-radius
-  border-bottom-right-radius
-  border-bottom-style
-  border-bottom-width
-  border-collapse
-  border-image-outset
-  border-image-repeat
-  border-image-slice
-  border-image-source
-  border-image-width
-  border-left-color
-  border-left-style
-  border-left-width
-  border-right-color
-  border-right-style
-  border-right-width
-  border-top-color
-  border-top-left-radius
-  border-top-right-radius
-  border-top-style
-  border-top-width
   bottom
   caption-side // 表头位置
   clear
@@ -91,6 +69,28 @@ layout
 
 render/draw
 
+  border-bottom-color
+  border-bottom-left-radius
+  border-bottom-right-radius
+  border-bottom-style
+  border-bottom-width
+  border-collapse
+  border-image-outset
+  border-image-repeat
+  border-image-slice
+  border-image-source
+  border-image-width
+  border-left-color
+  border-left-style
+  border-left-width
+  border-right-color
+  border-right-style
+  border-right-width
+  border-top-color
+  border-top-left-radius
+  border-top-right-radius
+  border-top-style
+  border-top-width
   background-attachment
   background-blend-mode
   background-clip
