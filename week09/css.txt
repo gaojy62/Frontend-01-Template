@@ -1,7 +1,5 @@
 layout
 
-  bottom
-  caption-side // 表头位置
   clear
   clip
   direction // 规定文本的书写方向
@@ -20,32 +18,16 @@ layout
   align-content
   align-items
   align-self
-  line-height
   margin-bottom
   margin-left
   margin-right
   margin-top
-  max-height
-  max-width
-  min-height
-  min-width
-  height
-  width
   overflow-anchor
   overflow-wrap
   overflow-x
   overflow-y
-  padding-bottom
-  padding-left
-  padding-right
-  padding-top
   position
-  top
-  bottom
-  right
-  left
   table-layout
-  tab-size
   vertical-align
   grid-auto-columns
   grid-auto-flow
@@ -69,6 +51,27 @@ layout
 
 render/draw
 
+  max-height
+  max-width
+  min-height
+  min-width
+  padding-bottom
+  padding-left
+  padding-right
+  padding-top
+  height
+  width
+  bottom
+  caption-side // 表头位置
+  clip
+  clip-path
+  clip-rule
+  line-height
+  top
+  bottom
+  right
+  left
+  tab-size
   border-bottom-color
   border-bottom-left-radius
   border-bottom-right-radius
@@ -155,7 +158,14 @@ render/draw
   backface-visibility // 指定当元素背面朝向观察者时是否可见
   backdrop-filter // 可以让你为一个元素后面区域添加图形效果
   perspective // 指定了观察者与 z=0 平面的距离，使具有三维位置变换的元素产生透视效果
-  perspective-origin // CSS 属性 perspective-origin 指定了观察者的位置，用作 perspective 属性的消失点
+  perspective-origin // CSS 属性 perspective-origin 指定了观察者的位置perspective 属性的消失点
+  shape-outside
+  shape-image-threshold
+  shape-margin
+  filter
+  paint-order // 属性可以让你控制文本区域和图形绘制的填充和绘制（和markers）的顺序
+  line-break // 可以用来处理如何断开（break lines）带有标点符号的中文、日文或韩文（CJK）文本的行
+
 
 
 
@@ -167,10 +177,52 @@ interactive
   scroll-behavior // 一个滚动框指定滚动行为，用户行为产生的滚动不受其影响
   speak
   touch-action // 设置触摸屏用户如何操纵元素的区域
+  user-select // 控制用户能否选中文本
+  caret-color // 定义插入光标（caret）的颜色
 
 svg
 
   image-rendering
+  buffered-rendering
+  mask
+  color-interpolation
+  color-interpolation-filters
+  color-rendering
+  flood-color
+  flood-opacity
+  lighting-color
+  stop-color
+  stop-opacity
+  fill
+  fill-opacity
+  fill-rule
+  marker-end
+  marker-mid
+  marker-start
+  mask-type
+  shape-rendering
+  stroke
+  stroke-dasharray
+  stroke-dashoffset
+  stroke-linecap
+  stroke-linejoin
+  stroke-miterlimit
+  stroke-opacity
+  stroke-width
+  alignment-baseline
+  baseline-shift
+  dominant-baseline
+  text-anchor
+  writing-mode
+  vector-effect
+  d
+  cx
+  cy
+  x
+  y
+  r
+  rx
+  ry
 
 other
 
@@ -183,9 +235,12 @@ other
   animation-name
   animation-play-state
   animation-timing-function
+  transform
+  transform-origin
+  transform-style
   transition-delay
   transition-duration
   transition-property
   transition-timing-function
   will-change
-  hyphens // 告知浏览器在换行时如何使用连字符连接单词。
+  hyphens // 告知浏览器在换行时如何使用连字符连接单词
