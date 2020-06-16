@@ -22,27 +22,144 @@
     <div id="board"></div>
     <script>
       let board = document.getElementById('board')
-      let pattern = [1, 0, 0, 0, 2, 0, 0, 0, 0]
+      let pattern = [0, 0, 0, 0, 0, 0, 0, 0, 0]
       let color = 1
+      show()
       function show() {
         board.innerHTML = ''
         for (let i = 0; i < pattern.length; i++) {
           let cell = document.createElement('div')
           cell.setAttribute('class', 'cell')
-          cell.innerHTML = pattern[i] === 1 ? '❌' : pattern[i] === 2 ? '⚪' : ''
-          cell.addEventListener('click', () => move(i))
+          cell.innerHTML =
+            pattern[i] === 1 ? '❌' : pattern[i] === 2 ? '⚪' : ''
+          cell.addEventListener('click', () => userMove(i))
           board.appendChild(cell)
           if (i % 3 === 2) {
             board.appendChild(document.createElement('br'))
           }
         }
       }
-      function move(i) {
+      function userMove(i) {
         pattern[i] = color
+        check(pattern, color) ? alert(`${color === 1 ? '❌' : '⚪'} win`) : ''
+        color = 3 - color
+        show()
+        computerMove()
+      }
+
+      function computerMove() {
+        let choice = bestChoice(pattern, color)
+        if (choice.point !== false) {
+          pattern[choice.point] = color
+          check(pattern, color) ? alert(`${color === 1 ? '❌' : '⚪'} win`) : ''
+        }
         color = 3 - color
         show()
       }
-      show()
+
+      function check(pattern, color) {
+        // 判断行
+        {
+          for (let i = 0; i < 3; i++) {
+            let win = true
+            for (let j = 0; j < 3; j++) {
+              if (pattern[i * 3 + j] !== color) {
+                win = false
+                break
+              }
+            }
+            if (win) {
+              return true
+            }
+          }
+        }
+        // 判断列
+        {
+          for (let i = 0; i < 3; i++) {
+            let win = true
+            for (let j = 0; j < 3; j++) {
+              if (pattern[j * 3 + i] !== color) {
+                win = false
+                break
+              }
+            }
+            if (win) {
+              return true
+            }
+          }
+        }
+        // 对角线1
+        {
+          let win = true
+          for (let i = 0; i < 3; i++)
+            if (pattern[i * 3 + i] !== color) {
+              win = false
+              break
+            }
+          if (win) {
+            return true
+          }
+        }
+        // 对角线2
+        {
+          let win = true
+          for (let i = 0; i < 3; i++)
+            if (pattern[i * 2 + 2] !== color) {
+              win = false
+              break
+            }
+          if (win) {
+            return true
+          }
+        }
+        return false
+      }
+
+      function clone(pattern) {
+        return Object.create(pattern)
+      }
+
+      function willWin(pattern, color) {
+        for (let i = 0; i < 9; i++) {
+          if (pattern[i] !== 0) {
+            continue
+          }
+          let tmp = clone(pattern)
+          tmp[i] = color
+          if (check(tmp, color)) {
+            return i
+          }
+        }
+        return false
+      }
+
+      function bestChoice(pattern, color) {
+        let point = willWin(pattern, color)
+        if (point !== false) {
+          return {
+            point,
+            result: 1, // 1 表示胜利，0 表示平局，-1 表示失败
+          }
+        }
+        let result = -1
+        for (let i = 0; i < 9; i++) {
+          if (pattern[i] !== 0) {
+            continue
+          }
+          let tmp = clone(pattern)
+          tmp[i] = color
+          let opposite = bestChoice(tmp, 3 - color)
+          if (-opposite.result >= result) {
+            point = i
+            result = -opposite.result
+          }
+          if (result === 1) break
+        }
+        return {
+          point,
+          result: point ? result : 0,
+        }
+      }
     </script>
   </body>
 </html>
