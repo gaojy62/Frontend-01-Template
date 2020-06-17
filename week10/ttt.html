@@ -132,8 +132,17 @@
         }
         return false
       }
-
+      let chess = new Map()
+      chess.set([0, 0, 0, 0, 0, 0, 0, 0, 0].toString(),4)
+      chess.set([0, 0, 0, 0, 1, 0, 0, 0, 0].toString(),0)
+      chess.set([0, 0, 0, 0, 2, 0, 0, 0, 0].toString(),0)
       function bestChoice(pattern, color) {
+        if(chess.has(pattern.toString())){
+          return {
+            point: chess.get(pattern.toString()),
+            result: 0
+          }
+        }
         let point = willWin(pattern, color)
         if (point !== false) {
           return {
