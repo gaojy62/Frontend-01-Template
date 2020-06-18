@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>寻路</title>
+    <style>
+      .cell {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background-color: gray;
+        border-bottom: solid 1px white;
+        border-right: solid 1px white;
+        vertical-align: middle;
+      }
+      #container {
+        width: 700px;
+        line-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <button onclick="saveMap()">save</button>
+    <button onclick="clearMap()">clear</button>
+    <script>
+      window.addEventListener('beforeunload', (e) => {
+        e.preventDefault()
+        console.log('close window')
+      })
+      let map = localStorage.map
+        ? JSON.parse(localStorage.map)
+        : new Array(10000).fill(0)
+      let container = document.getElementById('container')
+      let mouse = false,
+        clear = false
+      function render() {
+        container.innerHTML = ''
+        for (let i = 0; i < 10000; i++) {
+          let cell = document.createElement('div')
+          cell.classList.add('cell')
+          if (map[i] === 1) {
+            cell.style.backgroundColor = '#111'
+          }
+          cell.addEventListener('mouseover', () => {
+            if (mouse) {
+              if (clear) {
+                cell.style.backgroundColor = ''
+                map[i] = 0
+              } else {
+                cell.style.backgroundColor = '#111'
+                map[i] = 1
+              }
+            }
+          })
+          container.appendChild(cell)
+        }
+        document.addEventListener('mousedown', (e) => {
+          mouse = true
+          clear = e.which === 3
+        })
+        document.addEventListener('mouseup', (e) => {
+          mouse = false
+        })
+        document.addEventListener('contextmenu', (e) => {
+          e.preventDefault()
+        })
+      }
+      function saveMap() {
+        localStorage.map = JSON.stringify(map)
+      }
+      function clearMap() {
+        delete localStorage.map
+        map = new Array(10000).fill(0)
+        render()
+      }
+      render()
+    </script>
+  </body>
+</html>
