@@ -25,16 +25,44 @@
     <button onclick="saveMap()">save</button>
     <button onclick="clearMap()">clear</button>
     <script>
-      window.addEventListener('beforeunload', (e) => {
-        e.preventDefault()
-        console.log('close window')
-      })
+      class Sorted {
+        constructor(data, compare) {
+          this.data = data
+          this.compare = compare
+        }
+        take() {
+          if (!this.data.length) {
+            return
+          }
+          let min = this.data[0]
+          let minIndex = 0
+          for (let i = 0; i < this.data.length; i++) {
+            if (this.compare(this.data[i], min) < 0) {
+              min = this.data[i]
+              minIndex = i
+              console.log(min)
+            }
+          }
+          this.data[minIndex] = this.data[this.data.length - 1]
+          this.data.pop()
+          return min
+        }
+        insert(v) {
+          this.data.push(v)
+        }
+        get length() {
+          return this.data.length
+        }
+      }
+
       let map = localStorage.map
         ? JSON.parse(localStorage.map)
         : new Array(10000).fill(0)
       let container = document.getElementById('container')
       let mouse = false,
         clear = false
+      render()
+
       function render() {
         container.innerHTML = ''
         for (let i = 0; i < 10000; i++) {
@@ -67,15 +95,110 @@
           e.preventDefault()
         })
       }
+
       function saveMap() {
         localStorage.map = JSON.stringify(map)
       }
+
       function clearMap() {
         delete localStorage.map
         map = new Array(10000).fill(0)
         render()
       }
-      render()
+
+      async function findPath(map, start, end) {
+        map = map.slice()
+        container.children[start[1] * 100 + start[0]].style.backgroundColor =
+          'red'
+        container.children[end[1] * 100 + end[0]].style.backgroundColor = 'red'
+
+        function distance([x, y]) {
+          return (x - end[0]) ** 2 + (y - end[1]) ** 2
+        }
+
+        const collection = new Sorted(
+          [start],
+          (a, b) => distance(a) - distance(b)
+        )
+        // const queue = [start]
+
+        async function insert([x, y], pre) {
+          if (x < 0 || y < 0 || x >= 100 || y >= 100) return
+          if (map[100 * y + x] !== 0) return
+          map[100 * y + x] = pre
+          if (x !== start[0] || y !== start[1]) {
+            container.children[y * 100 + x].style.backgroundColor = 'lightgreen'
+          }
+          await sleep(1)
+          // queue.push([x, y])
+          collection.insert([x, y])
+        }
+
+        while (collection.length) {
+          // while (queue.length) {
+          let [x, y] = collection.take()
+          // let [x, y] = queue.shift()
+          if (x === end[0] && y === end[1]) {
+            let path = []
+            while (x !== start[0] || y !== start[1]) {
+              path.push([x, y])
+              await sleep(50)
+              container.children[y * 100 + x].style.backgroundColor = 'pink'
+              ;[x, y] = map[y * 100 + x]
+            }
+            return path
+          }
+
+          // 先走斜边，斜边不可达在判断水平/垂直方向
+
+          // await insert([x - 1, y], [x, y])
+          // await insert([x + 1, y], [x, y])
+          // await insert([x, y - 1], [x, y])
+          // await insert([x, y + 1], [x, y])
+
+          // 左上角
+          if (map[100 * y + x - 1] === 0 || map[100 * (y - 1) + x] === 0) {
+            await insert([x - 1, y - 1], [x, y])
+          }
+
+          // 右下角
+          if (map[100 * y + x + 1] === 0 || map[100 * (y + 1) + x] === 0) {
+            await insert([x + 1, y + 1], [x, y])
+          }
+
+          // 右上角
+          if (map[100 * y + x + 1] === 0 || map[100 * (y - 1) + x] === 0) {
+            await insert([x + 1, y - 1], [x, y])
+          }
+
+          // 左下角
+          if (map[100 * y + x - 1] === 0 || map[100 * (y + 1) + x] === 0) {
+            await insert([x - 1, y + 1], [x, y])
+          }
+          await insert([x - 1, y], [x, y])
+          await insert([x + 1, y], [x, y])
+          await insert([x, y - 1], [x, y])
+          await insert([x, y + 1], [x, y])
+
+          // await insert([x - 1, y], [x, y])
+          // await insert([x + 1, y], [x, y])
+          // await insert([x, y - 1], [x, y])
+          // await insert([x, y + 1], [x, y])
+
+          // await insert([x - 1, y - 1], [x, y])
+          // await insert([x + 1, y + 1], [x, y])
+          // await insert([x + 1, y - 1], [x, y])
+          // await insert([x - 1, y + 1], [x, y])
+        }
+        alert('无路可达！')
+        return null
+      }
+
+      async function sleep(t) {
+        return new Promise(function (resolve) {
+          setTimeout(resolve, t)
+        })
+      }
     </script>
   </body>
 </html>
