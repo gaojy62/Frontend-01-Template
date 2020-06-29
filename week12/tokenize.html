@@ -1,0 +1,173 @@
+<script>
+  const regexp = /([0-9\.]+)|([ \t\r\n]+)|([\r\n])|(\*)|(\/)|(\+)|(\-)/g
+
+  const dictionary = [
+    'Number',
+    'WhiteSpace',
+    'LinerTerminator',
+    '*',
+    '/',
+    '+',
+    '-',
+  ]
+
+  function* tokenize(source) {
+    let result = null
+    let lastIndex = 0
+    do {
+      lastIndex = regexp.lastIndex
+      result = regexp.exec(source)
+      if (!result) break
+
+      let token = {
+        type: null,
+        value: null,
+      }
+
+      for (let i = 1; i <= dictionary.length; i++) {
+        if (result[i]) {
+          token.type = dictionary[i - 1]
+        }
+      }
+      token.value = result[0]
+      yield token
+    } while (result)
+    yield { type: 'EOF' }
+  }
+
+  const source = []
+
+  for (let token of tokenize('1024 * 10 / 5 + 2 - 1')) {
+    if (token.type !== 'WhiteSpace' && token.type !== 'LinerTerminator') {
+      source.push(token)
+    }
+  }
+
+  /*
+    AdditiveExpression :
+      MultiplicativeExpression
+      AdditiveExpression + MultiplicativeExpression
+      AdditiveExpression - MultiplicativeExpression
+
+    MultiplicativeExpression :
+      ExponentiationExpression
+      MultiplicativeExpression * | / | % ExponentiationExpression
+  */
+
+  function Expression() {
+    if (
+      source[0].type === 'AddExpression' &&
+      source[1] &&
+      source[1].type === 'EOF'
+    ) {
+      let node = {
+        type: 'Expression',
+        children: [source.shift(), source.shift()],
+      }
+      source.unshift(node)
+      return node
+    }
+    AddExpression(source)
+    return Expression(source)
+  }
+
+  function AddExpression() {
+    if (source[0].type === 'MultiplicativeExpression') {
+      let node = {
+        type: 'AddExpression',
+        children: [source[0]],
+      }
+      source[0] = node
+      return AddExpression(source)
+    }
+    if (
+      source[0].type === 'AddExpression' &&
+      source[1] &&
+      source[1].type === '+'
+    ) {
+      let node = {
+        type: 'AddExpression',
+        operator: '+',
+        children: [],
+      }
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      MultiplicativeExpression(source)
+      node.children.push(source.shift())
+      source.unshift(node)
+      return AddExpression(source)
+    }
+    if (
+      source[0].type === 'AddExpression' &&
+      source[1] &&
+      source[1].type === '-'
+    ) {
+      let node = {
+        type: 'AddExpression',
+        operator: '-',
+        children: [],
+      }
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      MultiplicativeExpression(source)
+      node.children.push(source.shift())
+      source.unshift(node)
+      return AddExpression(source)
+    }
+    if (source[0].type === 'AddExpression') {
+      return source[0]
+    }
+    MultiplicativeExpression(source)
+    return AddExpression(source)
+  }
+
+  function MultiplicativeExpression(source) {
+    if (source[0].type === 'Number') {
+      let node = {
+        type: 'MultiplicativeExpression',
+        children: [source[0]], // statement 1
+      }
+      source[0] = node // statement 2
+      // statement 1 和 2 结合，省略了 shift 和 unshift 操作
+      return MultiplicativeExpression(source)
+    }
+    if (
+      source[0].type === 'MultiplicativeExpression' &&
+      source[1] &&
+      source[1].type === '*'
+    ) {
+      let node = {
+        type: 'MultiplicativeExpression',
+        operator: '*',
+        children: [],
+      }
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      source.unshift(node)
+      return MultiplicativeExpression(source)
+    }
+    if (
+      source[0].type === 'MultiplicativeExpression' &&
+      source[1] &&
+      source[1].type === '/'
+    ) {
+      let node = {
+        type: 'MultiplicativeExpression',
+        operator: '/',
+        children: [],
+      }
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      source.unshift(node)
+      return MultiplicativeExpression(source)
+    }
+    if (source[0].type === 'MultiplicativeExpression') {
+      return source[0]
+    }
+    return MultiplicativeExpression(source)
+  }
+
+  console.log(Expression(source))
+</script>
