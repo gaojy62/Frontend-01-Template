@@ -1,0 +1,2 @@
+function find(source, pattern) {}
+
