@@ -1,5 +1,5 @@
 <script>
-  const regexp = /([0-9\.]+)|([ \t\r\n]+)|([\r\n])|(\*)|(\/)|(\+)|(\-)/g
+  const regexp = /([0-9\.]+)|([ \t\r\n]+)|([\r\n])|(\*)|(\/)|(\+)|(\-)|(\()|(\))/g
 
   const dictionary = [
     'Number',
@@ -9,6 +9,8 @@
     '/',
     '+',
     '-',
+    '(',
+    ')',
   ]
 
   function* tokenize(source) {
@@ -35,15 +37,17 @@
     yield { type: 'EOF' }
   }
 
-  const source = []
-
-  for (let token of tokenize('12 * 2 + 1 / 2 -3')) {
-    if (token.type !== 'WhiteSpace' && token.type !== 'LinerTerminator') {
-      source.push(token)
-    }
-  }
-
   /*
+    Expression
+      Expression
+      BracketsExpression
+
+    BracketsExpression :
+      AdditiveExpression
+      MultiplicativeExpression
+      (AdditiveExpression)
+      (MultiplicativeExpression)
+
     AdditiveExpression :
       MultiplicativeExpression
       AdditiveExpression + MultiplicativeExpression
@@ -51,10 +55,11 @@
 
     MultiplicativeExpression :
       ExponentiationExpression
-      MultiplicativeExpression * | / | % ExponentiationExpression
+      MultiplicativeExpression (* | /)  ExponentiationExpression
   */
 
-  function Expression() {
+  function Expression(source) {
+    // 结束条件
     if (
       source[0].type === 'AddExpression' &&
       source[1] &&
@@ -67,11 +72,64 @@
       source.unshift(node)
       return node
     }
-    AddExpression(source)
+    BracketsExpression(source)
     return Expression(source)
   }
 
-  function AddExpression() {
+  function BracketsExpression(source) {
+    if (source[0].type === '(') {
+      source.shift()
+      AddExpression(source)
+      if (source[0].type === 'AddExpression' && source[1].type === ')') {
+        let node = source.shift()
+        source.shift()
+        source.unshift(node)
+      }
+      return BracketsExpression(source)
+    }
+    if (
+      source[0].type === 'AddExpression' &&
+      source[1] &&
+      (source[1].type === '+' || source[1].type === '-')
+    ) {
+      let node = {
+        type: 'AddExpression',
+        operator: source[1].type,
+        children: [],
+      }
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      AddExpression(source)
+      node.children.push(source.shift())
+      source.unshift(node)
+      return BracketsExpression(source)
+    }
+
+    if (
+      source[0].type === 'AddExpression' &&
+      source[1] &&
+      (source[1].type === '*' || source[1].type === '/')
+    ) {
+      let node = {
+        type: 'MultiplicativeExpression',
+        operator: source[1].type,
+        children: [],
+      }
+      node.children.push(source.shift())
+      node.children.push(source.shift())
+      AddExpression(source)
+      node.children.push(source.shift())
+      source.unshift(node)
+      return BracketsExpression(source)
+    }
+    if (source[0].type === 'AddExpression') {
+      return source[0]
+    }
+    AddExpression(source)
+    return BracketsExpression(source)
+  }
+
+  function AddExpression(source) {
     if (source[0].type === 'MultiplicativeExpression') {
       let node = {
         type: 'AddExpression',
@@ -167,6 +225,13 @@
       return source[0]
     }
     return MultiplicativeExpression(source)
+  }
+
+  const source = []
+  for (let token of tokenize('(12*2)/2+1')) {
+    if (token.type !== 'WhiteSpace' && token.type !== 'LinerTerminator') {
+      source.push(token)
+    }
   }
 
   console.log(Expression(source))
