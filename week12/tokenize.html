@@ -37,7 +37,7 @@
 
   const source = []
 
-  for (let token of tokenize('1024 * 10 / 5 + 2 - 1')) {
+  for (let token of tokenize('12 * 2 + 1 / 2 -3')) {
     if (token.type !== 'WhiteSpace' && token.type !== 'LinerTerminator') {
       source.push(token)
     }

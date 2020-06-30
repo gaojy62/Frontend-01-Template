@@ -1,0 +1,135 @@
+<script>
+  const EOF = Symbol('EOF')
+
+  let numberExpress = {
+    type: 'number',
+    value: '',
+  }
+  let express = {
+    type: 'Express',
+    children: [],
+  }
+  let addExpress = {
+    type: 'AddExpress',
+    children: [],
+  }
+  let multiplicativeExpress = {
+    type: 'MultiplicativeExpress',
+    children: [],
+  }
+  let bracketExpress = {
+    type: 'BracketExpress',
+    children: [],
+  }
+
+  function parseArithmetic(token) {
+    let state = start
+    for (let c of token) {
+      state = state(c)
+    }
+    state(EOF)
+    multiplicativeExpress = {
+      type: 'MultiplicativeExpress',
+      children: [numberExpress],
+    }
+    numberExpress = {
+      type: 'number',
+      value: '',
+    }
+    addExpress.children.push(multiplicativeExpress)
+    multiplicativeExpress = {
+      type: 'MultiplicativeExpress',
+      children: [],
+    }
+    express.children.push(addExpress)
+    addExpress = {
+      type: 'AddExpress',
+      children: [],
+    }
+    express.children.push({
+      type: 'EOF',
+    })
+  }
+  function start(c) {
+    if (c.match(/^[0-9.]$/)) {
+      return number(c)
+    } else if (c === EOF) {
+      throw new Error('语法错误！')
+    } else if (c.match(/[*/+-]/)) {
+      throw new Error('语法错误！')
+    } else if (c.match(/^[\n\f\t ]$/)) {
+      return start
+    }
+  }
+
+  function number(c) {
+    if (c === EOF) {
+      return
+    } else if (c.match(/^[0-9.]$/)) {
+      numberExpress.value += c
+      return number
+    } else if (c.match(/^[\n\f\t ]$/)) {
+      multiplicativeExpress.children.push(numberExpress)
+      numberExpress = {
+        type: 'number',
+        value: '',
+      }
+      return blankCharacter
+    } else if (c.match(/[*/+-]/)) {
+      multiplicativeExpress.children.push(numberExpress)
+      numberExpress = {
+        type: 'number',
+        value: '',
+      }
+      return operator(c)
+    }
+  }
+
+  function blankCharacter(c) {
+    if (c === EOF) {
+      return
+    } else if (c.match(/^[\n\f\t ]$/)) {
+      return blankCharacter
+    } else if (c.match(/[*/+-]/)) {
+      return operator(c)
+    } else if (c.match(/^[0-9.]$/)) {
+      return number(c)
+    }
+  }
+
+  function operator(c) {
+    if (c === EOF) {
+      throw new Error('语法错误！')
+    } else if (c.match(/[*/]/)) {
+      multiplicativeExpress = {
+        type: 'MultiplicativeExpress',
+        operator: c,
+        children: [multiplicativeExpress],
+      }
+      multiplicativeExpress.children.push({
+        type: c,
+        value: c,
+      })
+      return operator
+    } else if (c.match(/[+-]/)) {
+      addExpress = {
+        type: 'addExpress',
+        operator: c,
+        children: [multiplicativeExpress],
+      }
+      addExpress.children.push({
+        type: c,
+        value: c,
+      })
+      return operator
+    } else if (c.match(/^[\n\f\t ]$/)) {
+      return blankCharacter
+    } else if (c.match(/^[0-9.]$/)) {
+      return number(c)
+    }
+  }
+
+  function add(c) {}
+  function multiplicative(c) {}
+  function brackets(c) {}
+</script>
