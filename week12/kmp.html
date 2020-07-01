@@ -31,13 +31,22 @@
       let j = 0
       while (i < pattern.length) {
         if (pattern[i] === pattern[j]) {
-          j = j + 1
-          result[i] = j
+          j++
+          result.push(j)
+          i++
+        } else if (j) {
+          j = result[j - 1]
         } else {
-          j = 0
-          result[i] = j
+          i++
+          result.push(0)
         }
-        i++
+        // if (pattern[i] === pattern[j]) {
+        //   j++
+        // } else {
+        //   j = 0
+        // }
+        // result[i] = j
+        // i++
       }
       return result
     }
