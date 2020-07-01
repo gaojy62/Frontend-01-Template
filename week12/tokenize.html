@@ -38,24 +38,20 @@
   }
 
   /*
-    Expression
-      Expression
-      BracketsExpression
-
-    BracketsExpression :
-      AdditiveExpression
-      MultiplicativeExpression
-      (AdditiveExpression)
-      (MultiplicativeExpression)
+    Expression :
+      AdditiveExpression EOF
 
     AdditiveExpression :
       MultiplicativeExpression
-      AdditiveExpression + MultiplicativeExpression
-      AdditiveExpression - MultiplicativeExpression
+      AdditiveExpression (+ | -) MultiplicativeExpression
 
     MultiplicativeExpression :
       ExponentiationExpression
       MultiplicativeExpression (* | /)  ExponentiationExpression
+
+    ExponentiationExpression :
+      Number
+      (Expression)
   */
 
   function Expression(source) {
@@ -72,61 +68,15 @@
       source.unshift(node)
       return node
     }
-    BracketsExpression(source)
-    return Expression(source)
-  }
-
-  function BracketsExpression(source) {
-    if (source[0].type === '(') {
-      source.shift()
-      AddExpression(source)
-      if (source[0].type === 'AddExpression' && source[1].type === ')') {
-        let node = source.shift()
-        source.shift()
-        source.unshift(node)
-      }
-      return BracketsExpression(source)
-    }
     if (
       source[0].type === 'AddExpression' &&
       source[1] &&
-      (source[1].type === '+' || source[1].type === '-')
+      source[1].type === ')'
     ) {
-      let node = {
-        type: 'AddExpression',
-        operator: source[1].type,
-        children: [],
-      }
-      node.children.push(source.shift())
-      node.children.push(source.shift())
-      AddExpression(source)
-      node.children.push(source.shift())
-      source.unshift(node)
-      return BracketsExpression(source)
-    }
-
-    if (
-      source[0].type === 'AddExpression' &&
-      source[1] &&
-      (source[1].type === '*' || source[1].type === '/')
-    ) {
-      let node = {
-        type: 'MultiplicativeExpression',
-        operator: source[1].type,
-        children: [],
-      }
-      node.children.push(source.shift())
-      node.children.push(source.shift())
-      AddExpression(source)
-      node.children.push(source.shift())
-      source.unshift(node)
-      return BracketsExpression(source)
-    }
-    if (source[0].type === 'AddExpression') {
-      return source[0]
+      return
     }
     AddExpression(source)
-    return BracketsExpression(source)
+    return Expression(source)
   }
 
   function AddExpression(source) {
@@ -141,28 +91,11 @@
     if (
       source[0].type === 'AddExpression' &&
       source[1] &&
-      source[1].type === '+'
+      (source[1].type === '+' || source[1].type === '-')
     ) {
       let node = {
         type: 'AddExpression',
-        operator: '+',
-        children: [],
-      }
-      node.children.push(source.shift())
-      node.children.push(source.shift())
-      MultiplicativeExpression(source)
-      node.children.push(source.shift())
-      source.unshift(node)
-      return AddExpression(source)
-    }
-    if (
-      source[0].type === 'AddExpression' &&
-      source[1] &&
-      source[1].type === '-'
-    ) {
-      let node = {
-        type: 'AddExpression',
-        operator: '-',
+        operator: source[1].type,
         children: [],
       }
       node.children.push(source.shift())
@@ -180,43 +113,27 @@
   }
 
   function MultiplicativeExpression(source) {
-    if (source[0].type === 'Number') {
+    if (source[0].type === 'ExponentiationExpression') {
       let node = {
         type: 'MultiplicativeExpression',
-        children: [source[0]], // statement 1
+        children: [source[0]],
       }
-      source[0] = node // statement 2
-      // statement 1 和 2 结合，省略了 shift 和 unshift 操作
+      source[0] = node
       return MultiplicativeExpression(source)
     }
     if (
       source[0].type === 'MultiplicativeExpression' &&
       source[1] &&
-      source[1].type === '*'
+      (source[1].type === '*' || source[1].type === '/')
     ) {
       let node = {
         type: 'MultiplicativeExpression',
-        operator: '*',
+        operator: source[1].type,
         children: [],
       }
       node.children.push(source.shift())
       node.children.push(source.shift())
-      node.children.push(source.shift())
-      source.unshift(node)
-      return MultiplicativeExpression(source)
-    }
-    if (
-      source[0].type === 'MultiplicativeExpression' &&
-      source[1] &&
-      source[1].type === '/'
-    ) {
-      let node = {
-        type: 'MultiplicativeExpression',
-        operator: '/',
-        children: [],
-      }
-      node.children.push(source.shift())
-      node.children.push(source.shift())
+      ExponentiationExpression(source)
       node.children.push(source.shift())
       source.unshift(node)
       return MultiplicativeExpression(source)
@@ -224,11 +141,36 @@
     if (source[0].type === 'MultiplicativeExpression') {
       return source[0]
     }
+    ExponentiationExpression(source)
     return MultiplicativeExpression(source)
   }
 
+  function ExponentiationExpression(source) {
+    if (source[0].type === 'Number') {
+      let node = {
+        type: 'ExponentiationExpression',
+        children: [source[0]],
+      }
+      source[0] = node
+      return ExponentiationExpression(source)
+    }
+
+    if (source[0].type === '(') {
+      source.shift()
+      Expression(source)
+      if (source[0].type === 'AddExpression' && source[1].type === ')') {
+        let node = {
+        type: 'ExponentiationExpression',
+        children: [source.shift()],
+      }
+        source.shift() // 移除 ）
+        source.unshift(node)
+      }
+    }
+  }
+
   const source = []
-  for (let token of tokenize('(12*2)/2+1')) {
+  for (let token of tokenize('((12+2)*3)/2+1')) {
     if (token.type !== 'WhiteSpace' && token.type !== 'LinerTerminator') {
       source.push(token)
     }
