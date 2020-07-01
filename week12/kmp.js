@@ -1,2 +1,0 @@
-function find(source, pattern) {}
-

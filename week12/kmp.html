@@ -1,0 +1,45 @@
+<script>
+  function find(source, pattern) {
+    const next = getNext(pattern)
+    let j = 0
+    for (let i = 0; i < source.length; i++) {
+      if (i - j + pattern.length > source.length) {
+        return false
+      }
+      if (source[i] === pattern[j]) {
+        j++
+      } else {
+        while (j > 0) {
+          if (i === source.length - 1) {
+            return false
+          }
+          j = next[j - 1]
+          if (source[i] === pattern[j]) {
+            j++
+            break
+          }
+        }
+      }
+      if (j === pattern.length) {
+        return true
+      }
+    }
+    return false
+    function getNext(pattern) {
+      let result = [0]
+      let i = 1
+      let j = 0
+      while (i < pattern.length) {
+        if (pattern[i] === pattern[j]) {
+          j = j + 1
+          result[i] = j
+        } else {
+          j = 0
+          result[i] = j
+        }
+        i++
+      }
+      return result
+    }
+  }
+</script>
