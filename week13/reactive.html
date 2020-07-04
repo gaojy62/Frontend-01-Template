@@ -1,0 +1,60 @@
+<script>
+  let obj = {
+    a: 1,
+    b: 2,
+  }
+
+  const handles = new Map()
+
+  const reactives = new Map()
+
+  let useReactivies = []
+
+  function reactive(object) {
+    if (reactives.hsa(object)) {
+      return reactives.get(object)
+    }
+
+    let proxy = new Proxy(object, {
+      get(target, property, receiver) {
+        useReactivies.push([object, property])
+        if (typeof object[property] === 'object') {
+          return reactive(object[property])
+        }
+        return target[property]
+      },
+      set(target, property, value) {
+        target[property] = value
+        if (handles.get(object)) {
+          if (handles.get(object).get(property)) {
+            for (let handle of handles.get(object).get(property)) {
+              handle()
+            }
+          }
+        }
+        return target[property]
+      },
+    })
+    reactives.set(object, proxy)
+    return proxy
+  }
+
+  function effect(handle) {
+    useReactivies = []
+    handle()
+    for (let useReactive of useReactivies) {
+      let [object, property] = useReactive
+      if (!handles.has(object)) {
+        handles.set(object, new Map())
+      }
+      if (!handles.get(object).has(property)) {
+        handles.get(object).set(property, [])
+      }
+      handles.get(object).get(property).push(handle)
+    }
+  }
+
+  let dummy = 0
+
+  let proxy = reactive(obj)
+</script>
