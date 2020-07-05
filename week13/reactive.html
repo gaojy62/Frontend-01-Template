@@ -1,23 +1,23 @@
-<script>
-  let obj = {
-    a: 1,
-    b: 2,
-  }
+<label for="">r:</label><input id="r" name="r" type="range" min="0" max="255" />
+<label for="">g:</label><input id="g" name="g" type="range" min="0" max="255" />
+<label for="">b:</label><input id="b" name="b" type="range" min="0" max="255" />
 
+<div id="bg" style="width: 100px; height: 100px;"></div>
+<script>
   const handles = new Map()
 
   const reactives = new Map()
 
-  let useReactivies = []
+  let useReactivies = new Set()
 
   function reactive(object) {
-    if (reactives.hsa(object)) {
+    if (reactives.has(object)) {
       return reactives.get(object)
     }
 
     let proxy = new Proxy(object, {
       get(target, property, receiver) {
-        useReactivies.push([object, property])
+        useReactivies.add([object, property])
         if (typeof object[property] === 'object') {
           return reactive(object[property])
         }
@@ -40,9 +40,9 @@
   }
 
   function effect(handle) {
-    useReactivies = []
+    useReactivies.clear()
     handle()
-    for (let useReactive of useReactivies) {
+    for (let useReactive of useReactivies.keys()) {
       let [object, property] = useReactive
       if (!handles.has(object)) {
         handles.set(object, new Map())
@@ -54,7 +54,32 @@
     }
   }
 
-  let dummy = 0
+  let bgColor = reactive({
+    r: 0,
+    g: 0,
+    b: 0,
+  })
 
-  let proxy = reactive(obj)
+  const bg = document.getElementById('bg')
+  const r = document.getElementById('r')
+  const g = document.getElementById('g')
+  const b = document.getElementById('b')
+
+  r.addEventListener('input', (e) => {
+    bgColor.r = e.target.value
+  })
+  g.addEventListener('input', (e) => {
+    bgColor.g = e.target.value
+  })
+  b.addEventListener('input', (e) => {
+    bgColor.b = e.target.value
+  })
+  
+
+  effect(() => (document.getElementById('r').value = bgColor.r))
+  effect(() => (document.getElementById('g').value = bgColor.g))
+  effect(() => (document.getElementById('b').value = bgColor.b))
+  effect(() => {
+    bg.style.backgroundColor = `rgb(${bgColor.r},${bgColor.g},${bgColor.b})`
+  })
 </script>
