@@ -3,6 +3,7 @@
 <label for="">b:</label><input id="b" name="b" type="range" min="0" max="255" />
 
 <div id="bg" style="width: 100px; height: 100px;"></div>
+<div id="text">当前颜色为: {{color}}</div>
 <script>
   const handles = new Map()
 
@@ -81,5 +82,14 @@
   effect(() => (document.getElementById('b').value = bgColor.b))
   effect(() => {
     bg.style.backgroundColor = `rgb(${bgColor.r},${bgColor.g},${bgColor.b})`
+  })
+
+  let range = document.createRange()
+  let text = document.getElementById('text')
+  range.setStart(text.childNodes[0],6)
+  range.setEnd(text.childNodes[0],16)
+  effect(()=>{
+    range.extractContents()
+    range.insertNode(document.createTextNode(`rgb(${bgColor.r},${bgColor.g},${bgColor.b})`))
   })
 </script>
