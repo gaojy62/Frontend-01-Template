@@ -1,88 +1,16 @@
-function createElement(Cls, attributes, ...children) {
-  let o
-  if (typeof Cls === 'string') {
-    o = new Wrapper(Cls)
-  } else {
-    o = new Cls()
-  }
-  for (let name in attributes) {
-    o.setAttribute(name, attributes[name])
-  }
-  console.log(o)
-  for (let child of children) {
-    if (typeof child === 'string') {
-      child = new Text(child)
-    }
-    o.appendChild(child)
-  }
-  return o
-}
-
-class Text {
-  constructor(text) {
-    this.root = document.createTextNode(text)
-  }
-  mountTo(parent) {
-    parent.appendChild(this.root)
-  }
-}
-
-class Wrapper {
-  constructor(type) {
-    this.children = []
-    this.root = document.createElement(type)
-  }
-  setAttribute(name, value) {
-    this.root.setAttribute(name, value)
-  }
-  appendChild(child) {
-    this.children.push(child)
-  }
-  mountTo(parent) {
-    parent.appendChild(this.root)
-    for (let child of this.children) {
-      child.mountTo(this.root)
-    }
-  }
-}
-
-class MyComponent {
-  constructor(config) {
-    this.children = []
-    this.slot = <div></div>
-  }
-
-  setAttribute(name, value) {
-    this.slot.setAttribute(name, value)
-  }
-
-  appendChild(child) {
-    this.children.push(child)
-  }
-
-  render() {
-    return (
-      <article>
-        <header>this is a header</header>
-        {this.slot}
-        <footer>this is a footer</footer>
-      </article>
-    )
-  }
-
-  mountTo(parent) {
-    // this.slot = <div></div>
-    for (let child of this.children) {
-      this.slot.appendChild(child)
-    }
-    this.render().mountTo(parent)
-  }
-}
+import { createElement, Text, Wrapper } from './createElement'
+import { Carousel } from './carousel'
 
 let component = (
-  <MyComponent id="a">
-    <div>text text text</div>
-  </MyComponent>
+  <Carousel
+    class={"carousel"}
+    data={[
+      ' https://static001.geekbang.org/resource/image/bb/21/bb38fb7c1073eaee1755f81131f11d21.jpg ',
+      ' https://static001.geekbang.org/resource/image/1b/21/1b809d9a2bdf3ecc481322d7c9223c21.jpg ',
+      ' https://static001.geekbang.org/resource/image/b6/4f/b6d65b2f12646a9fd6b8cb2b020d754f.jpg ',
+      ' https://static001.geekbang.org/resource/image/73/e4/730ea9c393def7975deceb48b3eb6fe4.jpg '
+    ]}
+  ></Carousel>
 )
 
 component.mountTo(document.body)
