@@ -1,5 +1,3 @@
-import { createElement, Text, Wrapper } from './createElement'
-
 export class Carousel {
   constructor(config) {
     // this.children = []
@@ -21,7 +19,7 @@ export class Carousel {
       element.addEventListener('dragstart', e => e.preventDefault())
       return element
     })
-    let root = <div class={this.class}>{children}</div>
+    let root = <div id = {this.id || ''} class={this.class}>{children}</div>
 
     let position = 0
     let nextPic = () => {
