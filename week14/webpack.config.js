@@ -9,18 +9,21 @@ module.exports = {
           options: {
             presets: ['@babel/preset-env'],
             plugins: [
-              [
-                '@babel/plugin-transform-react-jsx',
-                { pragma: 'createElement' },
-              ],
-            ],
-          },
-        },
+              ['@babel/plugin-transform-react-jsx', { pragma: 'createElement' }]
+            ]
+          }
+        }
       },
-    ],
+      {
+        test: /\.view/,
+        use: {
+          loader: require.resolve('./myloader.js')
+        }
+      }
+    ]
   },
   mode: 'development',
   optimization: {
-    minimize: false,
-  },
+    minimize: false
+  }
 }
