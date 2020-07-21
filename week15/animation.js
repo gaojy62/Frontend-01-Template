@@ -1,13 +1,12 @@
 export class Timeline {
   constructor() {
     this.animations = []
+    this.requestID = null
   }
   tick() {
     let t = Date.now() - this.startTime
+    let animations = this.animations.filter(animation => !animation.finished)
     for (let animation of this.animations) {
-      if (t > animation.duration + animation.delay) {
-        continue
-      }
       let {
         object,
         property,
@@ -20,10 +19,28 @@ export class Timeline {
       } = animation
 
       let progression = timingFunction((t - delay) / duration)
+      if (t > animation.duration + animation.delay) {
+        progression = 1
+        animation.finished = true
+      }
       let value = start + progression * (end - start)
       object[property] = template(value)
     }
-    requestAnimationFrame(() => this.tick())
+    if (animations.length) {
+      this.requestID = requestAnimationFrame(() => this.tick())
+    }
+  }
+
+  pause() {
+    this.pauseTime = Date.now()
+    if (this.requestID != null) {
+      cancelAnimationFrame(this.requestID)
+    }
+  }
+
+  resume() {
+    this.startTime += Date.now() - this.pauseTime
+    this.tick()
   }
 
   start() {
