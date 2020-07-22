@@ -13,7 +13,6 @@ module.exports = function (source, map) {
       script = node
     }
   }
-  console.log(template.children[1])
   let visit = (node) => {
     if(node.type == 'text'){
       return JSON.stringify(node.content)
