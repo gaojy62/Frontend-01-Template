@@ -1,11 +1,18 @@
 export class Timeline {
   constructor() {
+    this.inited = Symbol('inited')
+    this.playing = Symbol('playing')
+    this.paused = Symbol('paused')
+
     this.animations = []
     this.requestID = null
+    this.state = this.inited
   }
   tick() {
     let t = Date.now() - this.startTime
-    let animations = this.animations.filter(animation => !animation.finished)
+
+    let animations = this.animations.filter((animation) => !animation.finished)
+
     for (let animation of this.animations) {
       let {
         object,
@@ -15,15 +22,24 @@ export class Timeline {
         end,
         duration,
         delay,
-        timingFunction
+        timingFunction,
+        addTime,
       } = animation
 
-      let progression = timingFunction((t - delay) / duration)
-      if (t > animation.duration + animation.delay) {
+      let progression = 0
+      if (t - delay - addTime < 0) {
+        progression = 0
+      } else {
+        progression = timingFunction((t - delay - addTime) / duration)
+      }
+
+      if (t > duration + delay + addTime) {
         progression = 1
         animation.finished = true
       }
+
       let value = start + progression * (end - start)
+
       object[property] = template(value)
     }
     if (animations.length) {
@@ -32,6 +48,8 @@ export class Timeline {
   }
 
   pause() {
+    if (this.state !== this.playing) return
+    this.state = this.paused
     this.pauseTime = Date.now()
     if (this.requestID != null) {
       cancelAnimationFrame(this.requestID)
@@ -39,17 +57,41 @@ export class Timeline {
   }
 
   resume() {
+    if (this.state !== this.paused) return
+    this.state = this.playing
     this.startTime += Date.now() - this.pauseTime
     this.tick()
   }
 
   start() {
+    if (this.state !== this.inited) return
+    this.state = this.playing
     this.startTime = Date.now()
     this.tick()
   }
 
-  add(animation) {
+  restart() {
+    if (this.state === this.playing) this.pause()
+    // this.animations = []
+    this.startTime = Date.now()
+    this.requestID = null
+    this.pauseTime = null
+    this.state = this.playing
+    this.animations.forEach((animation) => {
+      animation.finished = false
+    })
+    this.tick()
+  }
+
+  add(animation, addTime) {
     this.animations.push(animation)
+    animation.finished = false
+    if (this.state === this.playing) {
+      animation.addTime =
+        addTime != void 0 ? addTime : Date.now() - this.startTime
+    } else {
+      animation.addTime = addTime != void 0 ? addTime : 0
+    }
   }
 }
 
