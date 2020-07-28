@@ -1,2 +1,27 @@
-<body></body>
+<body>
+  <div
+    id="id"
+    style="
+      width: 100px;
+      height: 100px;
+      background-color: aqua;
+      transform: translate(0px, 0px);
+    "
+  ></div>
+</body>
 <script src="./gesture.js"></script>
+<script>
+  let x = 0
+  let y = 0
+  let element = document.getElementById('id')
+  gesture(element)
+  element.addEventListener('pan', (event) => {
+    element.style.transform = `translate(${
+      x + event.clientX - event.startX
+    }px, ${y + event.clientY - event.startY}px)`
+  })
+  element.addEventListener('panend', (event) => {
+    x = x + event.clientX - event.startX
+    y = y + event.clientY - event.startY
+  })
+</script>
