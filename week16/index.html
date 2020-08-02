@@ -1,35 +1,27 @@
-<body>
-  <div
-    id="id"
-    style="
-      width: 100px;
-      height: 100px;
-      background-color: aqua;
-      transform: translate(0px, 0px);
-    "
-  ></div>
-</body>
-<script src="./gesture.js"></script>
-<script>
-  let x = 0
-  let y = 0
-  let element = document.getElementById('id')
-  gesture(element)
-  element.addEventListener('pan', (event) => {
-    console.log('pan')
-    element.style.transform = `translate(${
-      x + event.clientX - event.startX
-    }px, ${y + event.clientY - event.startY}px)`
-  })
-  element.addEventListener('panend', (event) => {
-    console.log('panend')
-    x = x + event.clientX - event.startX
-    y = y + event.clientY - event.startY
-  })
-  element.addEventListener('flick', (event) => {
-    console.log('flick')
-    console.log(event.speed)
-    x = x + event.clientX - event.startX
-    y = y + event.clientY - event.startY
-  })
-</script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .carousel {
+        height: 300px;
+        width: 500px;
+        white-space: nowrap;
+        overflow: hidden;
+        /* outline: 3px solid red; */
+        /* zoom: 0.5; */
+        margin: 0 auto;
+      }
+      .carousel > img {
+        height: 300px;
+        width: 500px;
+        transition: transform ease 1s;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="./dist/main.js"></script>
+  </body>
+</html>

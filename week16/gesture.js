@@ -1,4 +1,4 @@
-function gesture(element) {
+export function gesture(element) {
   let context = Object.create(null)
 
   const MOUSE_SYMBOL = Symbol('mouse')

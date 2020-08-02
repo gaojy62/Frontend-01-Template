@@ -1,6 +1,5 @@
 import { createElement, Text, Wrapper } from './createElement'
 import { Carousel } from './carousel'
-// import { Carousel } from './carousel.view'
 
 let component = (
   <Carousel
