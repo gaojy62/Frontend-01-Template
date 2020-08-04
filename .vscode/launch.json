@@ -7,8 +7,8 @@
     "type": "chrome",
     "request": "launch",
     "name": "启动程序",
-    "url": "http://localhost:8080/xanimation.html",
-    "webRoot": "${workspaceFolder}/week15/"
+    "url": "http://localhost:8080/index.html",
+    "webRoot": "${workspaceFolder}/week16/"
     // "skipFiles": ["<node_internals>/**"],
     // "program": "${workspaceFolder}\\week15\\xanimation.html"
   }]

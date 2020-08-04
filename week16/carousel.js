@@ -36,7 +36,7 @@ export class Carousel {
         clearTimeout(nextPicStopHandler)
         let currentElemnet = children[currentPosition]
         let currentTransformValue = Number(
-          currentElemnet.style.transform.mathch(/translateX\(([\s\S]+)px\)/)[1]
+          currentElemnet.style.transform.match(/translateX\(([\s\S]+)px\)/)[1]
         )
         offset = currentTransformValue + 500 * currentPosition
       }
@@ -53,7 +53,7 @@ export class Carousel {
         let nextTransformValue = 500 - 500 * nextPosition + offset + dx
 
         lastElement.style.transform = `translateX(${lastTransformValue}px)`
-        currentElement.style.transform = `translateX(${currentTransformValue}px)`
+        currentElemnet.style.transform = `translateX(${currentTransformValue}px)`
         nextElement.style.transform = `translateX(${nextTransformValue}px)`
       }
 
@@ -116,7 +116,7 @@ export class Carousel {
           onStart={onStart}
           onPan={onPan}
           onPanend={onPanend}
-          enableGensture={true}
+          enableGesture={true}
         />
       )
       element.style.transform = "translateX(0px)"
@@ -143,7 +143,7 @@ export class Carousel {
       let nextAnimation = new Animation(
         next.style,
         'transform',
-        100 - 100 * position,
+        100 - 100 * nextPosition,
         -100 * nextPosition,
         500,
         0,

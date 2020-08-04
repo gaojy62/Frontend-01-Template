@@ -47,9 +47,10 @@ export class Wrapper {
     if (name.match(/^on([\s\S]+)$/)) {
       let eventName = RegExp.$1.replace(/^[\s\S]/, c => c.toLocaleLowerCase())
       this.addEventListener(eventName, value)
-      console.log(eventName)
+      console.log(eventName, '****')
     }
     if (name === 'enableGesture') {
+      console.log('allow gesture')
       gesture(this.root)
     }
   }

@@ -43,7 +43,7 @@ export class Timeline {
       object[property] = template(value)
     }
     if (this.animations.size) {
-      this.requestID = requestAnimationFrame(this.tick)
+      this.requestID = requestAnimationFrame(()=>this.tick())
     } else {
       this.requestID = null
     }
