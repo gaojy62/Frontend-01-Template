@@ -12,6 +12,7 @@ export function gesture(element) {
         move(event, context[MOUSE_SYMBOL])
       }
       let mouseEnd = (event) => {
+        console.log('mouse up')
         end(event, context[MOUSE_SYMBOL])
         element.removeEventListener('mousemove', mouseMove)
         element.removeEventListener('mouseup', mouseEnd)
@@ -134,6 +135,7 @@ export function gesture(element) {
   }
 
   let end = (point, context) => {
+    console.log('enter end event')
     if (context.isPan) {
       let dx = point.clientX - context.startX
       let dy = point.clientY - context.startY
@@ -155,18 +157,17 @@ export function gesture(element) {
             speed,
           })
         )
-      } else {
-        element.dispatchEvent(
-          Object.assign(new CustomEvent('panend'), {
-            startX: context.startX,
-            startY: context.startY,
-            clientX: point.clientX,
-            clientY: point.clientY,
-            speed,
-            isFlick,
-          })
-        )
-      }
+      } 
+      element.dispatchEvent(
+        Object.assign(new CustomEvent('panend'), {
+          startX: context.startX,
+          startY: context.startY,
+          clientX: point.clientX,
+          clientY: point.clientY,
+          speed,
+          isFlick,
+        })
+      )
     }
     // 如果到结束状态都是 tap ，则只向外分发一个 tap 事件，通常 tap 事件不需要太多信息
     if (context.isTap) element.dispatchEvent('tap', {})
