@@ -61,9 +61,11 @@ export class Carousel {
         let direction = 0
         let dx = event.clientX - event.startX
 
-        if (dx + offset > 250) {
+        console.log(event.isFlick)
+
+        if (dx + offset > 250 || dx > 0 && event.isFflick) {
           direction = 1
-        } else if (dx + offset < -250) {
+        } else if (dx + offset < -250 || dx < 0 && event.isFflick) {
           direction = -1
         }
 
@@ -107,9 +109,10 @@ export class Carousel {
         timeLine.add(lastAnimation)
         timeLine.add(currentAnimation)
         timeLine.add(nextAnimation)
-        position = (position - direction + this.data.length) & this.data.length
+        position = (position - direction + this.data.length) % this.data.length
         nextPicStopHandler = setTimeout(nextPic, 3000)
       }
+
       let element = (
         <img
           src={url}

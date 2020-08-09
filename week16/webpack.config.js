@@ -13,6 +13,12 @@ module.exports = {
             ]
           }
         }
+      },
+      {
+        test: /\.css$/,
+        use: {
+          loader: require.resolve('./cssLoader.js')
+        }
       }
     ]
   },

@@ -1,5 +1,4 @@
 export function gesture(element) {
-  console.log(element)
   let context = Object.create(null)
 
   const MOUSE_SYMBOL = Symbol('mouse')
@@ -135,7 +134,6 @@ export function gesture(element) {
   }
 
   let end = (point, context) => {
-    console.log('enter end event')
     if (context.isPan) {
       let dx = point.clientX - context.startX
       let dy = point.clientY - context.startY
