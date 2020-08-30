@@ -4,7 +4,9 @@
   "description": "## 讲师课件下载地址",
   "main": "index.js",
   "dependencies": {
-    "eslint": "^7.6.0"
+    "css": "^3.0.0",
+    "eslint": "^7.6.0",
+    "images": "^3.2.3"
   },
   "devDependencies": {},
   "scripts": {

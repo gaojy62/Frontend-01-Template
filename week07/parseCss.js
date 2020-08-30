@@ -99,7 +99,7 @@ function isContain(arr1, arr2) {
       // 如果有对应值则跳出循环，继续寻找 arr2 中的下一个值
       if (itemOfArr1 === item) {
         itemInArr1 = true
-        continue
+        break
       }
     }
     // 如果当前值 item 在 arr1 中没有对应值，则说明不匹配
@@ -130,12 +130,12 @@ function match(element, selector) {
   if (compositeSelector.tagClass.length > 0) {
     let attr = element.attributes.filter((attr) => attr.name === 'class')
     if (attr.length > 0) {
-      if (isContain(attr[0].value.split(' '), compositeSelector.tagClass)) {
+        if (isContain(attr[0].value.split(' '), compositeSelector.tagClass)) {
         matchClass = true
       }
     }
   } else {
-    matchId = true
+    matchClass = true
   }
 
   if (compositeSelector.tagName.length > 0) {
